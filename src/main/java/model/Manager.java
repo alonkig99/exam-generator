@@ -70,11 +70,12 @@ public class Manager implements Serializable {
     }
 
 
-    public void addOpenQuestion(String questionText, String answerText) throws Exception {
+    public void addOpenQuestion(String questionText, String answerText)  {
         OpenQuestion question = new OpenQuestion(questionText, answerText);
         for (Question value : questions) {
             if (value != null && value.equals(question)) {
-              throw new Exception("Question already exists.");
+              fireQuestionAlreadyExistsEvent();
+              return;
 
             }
 
@@ -85,21 +86,28 @@ public class Manager implements Serializable {
 
     }
 
-    private void FireAddQuestionEvent() {
-        for(SystemEventListener l : listeners){
-            l.addOpenQuestionToView();
-        }
-    }
 
-    public boolean addMultiQuestion(String questionText) {
+    public void addMultiQuestion(String questionText) {
         MultiChoiceQuestion question = new MultiChoiceQuestion(questionText);
         for (Question value : questions) {
             if (value != null && value.equals(question)) {
-                return false;
+               fireQuestionAlreadyExistsEvent();
+               return;
             }
         }
         questions.add(question);
-        return true;
+        FireAddQuestionEvent();
+
+    }
+    private void FireAddQuestionEvent() {
+        for(SystemEventListener l : listeners){
+            l.addQuestionToView();
+        }
+    }
+    private void fireQuestionAlreadyExistsEvent() {
+        for(SystemEventListener l : listeners) {
+            l.questionAlreadyExistsToView();
+        }
     }
 
     /**
