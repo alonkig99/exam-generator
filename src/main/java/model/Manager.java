@@ -31,6 +31,8 @@ public class Manager implements Serializable {
         return questions.size();
     }
 
+
+
     public Exam getCurrentExam() {
         return currentExam;
     }
@@ -66,21 +68,25 @@ public class Manager implements Serializable {
      */
     public void updateQuestion(int serial, String text) {
         getQuestionById(serial).setQuestionText(text);
-        System.out.println("The question has been successfully updated.");
+        fireUpdatedQuestionEvent();
+
+    }
+
+    private void fireUpdatedQuestionEvent() {
+        for(SystemEventListener l : listeners){
+            l.updateQuestionToView();
+        }
     }
 
 
     public void addOpenQuestion(String questionText, String answerText)  {
-        OpenQuestion question = new OpenQuestion(questionText, answerText);
         for (Question value : questions) {
-            if (value != null && value.equals(question)) {
+            if (value instanceof OpenQuestion && value.getQuestionText().equalsIgnoreCase(questionText)) {
               fireQuestionAlreadyExistsEvent();
               return;
-
             }
-
         }
-
+        OpenQuestion question = new OpenQuestion(questionText, answerText);
         questions.add(question);
         FireAddQuestionEvent();
 
@@ -88,13 +94,13 @@ public class Manager implements Serializable {
 
 
     public void addMultiQuestion(String questionText) {
-        MultiChoiceQuestion question = new MultiChoiceQuestion(questionText);
         for (Question value : questions) {
-            if (value != null && value.equals(question)) {
+            if (value instanceof MultiChoiceQuestion && value.getQuestionText().equalsIgnoreCase(questionText)) {
                fireQuestionAlreadyExistsEvent();
                return;
             }
         }
+        MultiChoiceQuestion question = new MultiChoiceQuestion(questionText);
         questions.add(question);
         FireAddQuestionEvent();
 

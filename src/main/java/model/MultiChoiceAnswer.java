@@ -64,7 +64,7 @@ public class MultiChoiceAnswer implements Serializable,Cloneable {
         if (!(other instanceof MultiChoiceAnswer q)) {
             return false;
         }
-        return this.answer.compareToIgnoreCase(q.answer) == 0;
+        return this.answer.equalsIgnoreCase(q.answer);
     }
 
 

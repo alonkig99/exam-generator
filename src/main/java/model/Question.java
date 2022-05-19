@@ -64,7 +64,7 @@ public abstract class Question implements Serializable , Cloneable{
             return false;
         }
         Question q = (Question) other;
-        return q.questionText.compareToIgnoreCase(this.questionText)==0;
+        return q.questionText.equalsIgnoreCase(this.questionText);
     }
 
 

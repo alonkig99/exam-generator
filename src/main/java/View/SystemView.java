@@ -1,7 +1,6 @@
 package View;
 
 import Listeners.SystemUIEventListener;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -19,35 +18,46 @@ import javafx.scene.control.ScrollPane;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 
 public class SystemView implements AbstractSystemView {
 
     private List<SystemUIEventListener> allListeners = new ArrayList<>();
-    private Scene menuScene, addQuestionScene;
+    private Scene menuScene, addQuestionScene, updateQuestionScene, updateAnswerScene;
     private final Stage stgDisplayQuestion = new Stage();
 
+    //  btnReturnToMenu.setTranslateX(100);
+    //  btnReturnToMenu.setTranslateY(100);
     public SystemView(Stage theStage) {
         theStage.setTitle("Exam Generator");
+        VBox vbMenu = new VBox();
 
-        Button btnReturnToMenu = new Button("Return to main menu");
-        btnReturnToMenu.setTranslateX(100);
-        btnReturnToMenu.setTranslateY(100);
-        btnReturnToMenu.setOnAction(actionEvent -> theStage.setScene(menuScene));
-
-        Button displayQuestionsButton = new Button("Display Questions");
-        displayQuestionsButton.setOnAction(actionEvent -> {
+        Button btnDisplayQuestions = new Button("Display Questions");
+        btnDisplayQuestions.setMaxWidth(150);
+        btnDisplayQuestions.setOnAction(actionEvent -> {
             for (SystemUIEventListener l : allListeners) {
                 l.displayQuestionToModel();
             }
         });
 
-        Button addQuestionButton = new Button("Add question");
-        addQuestionButton.setOnAction(actionEvent -> theStage.setScene(addQuestionScene));
+        Button btnAddQuestion = new Button("Add Question");
+        btnAddQuestion.setMaxWidth(150);
+        btnAddQuestion.setOnAction(actionEvent -> theStage.setScene(addQuestionScene));
 
 
-        //// Add Question Scene ////
+        Button btnUpdateQuestion = new Button("Update Question");
+        btnUpdateQuestion.setMaxWidth(150);
+        btnUpdateQuestion.setOnAction(actionEvent -> {
+            theStage.setScene(updateQuestionScene);
+            for (SystemUIEventListener l : allListeners) {
+                l.displayQuestionToModel();
+            }
+        });
+        Button btnUpdateAnswer = new Button("Update Answer");
+        btnUpdateAnswer.setMaxWidth(150);
+
+
+
         VBox vbAddQuestion = new VBox();
         HBox hbQuestionText = new HBox();
         hbQuestionText.setSpacing(5);
@@ -62,27 +72,31 @@ public class SystemView implements AbstractSystemView {
         rdoOpenQuestionButton.setToggleGroup(tglQuestionType);
         vbAddQuestion.setPadding(new Insets(10));
         vbAddQuestion.setSpacing(10);
-        //Open Answer HBox//
+
         HBox hbAddOpenAnswer = new HBox();
         hbAddOpenAnswer.setVisible(false);
         Label lblAddOpenAnswer = new Label("Enter answer text:");
         TextField tfAnswerText = new TextField();
         Button btnSubmitOpenAnswer = new Button("Submit question&answer");
         btnSubmitOpenAnswer.setOnAction((actionEvent -> {
+            if (tfAddQuestion.getText().equals("") || tfAnswerText.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "Question/answer fields cannot be empty. Try again.");
+                return;
+            }
             for (SystemUIEventListener l : allListeners) {
                 l.addOpenQuestionToModel(tfAddQuestion.getText(), tfAnswerText.getText());
             }
+            tfAddQuestion.clear();
+            tfAnswerText.clear();
         }));
         hbAddOpenAnswer.setPadding(new Insets(10));
         hbAddOpenAnswer.setSpacing(5);
         hbAddOpenAnswer.getChildren().addAll(lblAddOpenAnswer, tfAnswerText, btnSubmitOpenAnswer);
 
-
-        ////MultipleChoice Answer HBox//
-        LinkedHashSet<String> answersList = new LinkedHashSet<>();
-        ArrayList<Boolean>booleanList = new ArrayList<>();
         VBox vbAddAmericanAnswer = new VBox();
         vbAddAmericanAnswer.setVisible(false);
+        LinkedHashSet<String> answersList = new LinkedHashSet<>();
+        ArrayList<Boolean> booleanList = new ArrayList<>();
         HBox hbAddAmericanAnswer = new HBox();
         Label lblAddAmericanAnswer = new Label("Enter answers one by one:");
         TextField tfAmericanAnswerText = new TextField();
@@ -93,36 +107,48 @@ public class SystemView implements AbstractSystemView {
         btnFalse.setToggleGroup(tglBooleanValue);
         Button btnSubmitAmericanAnswer = new Button("Submit answer");
         btnSubmitAmericanAnswer.setOnAction(actionEvent -> {
-            if (tglBooleanValue.getSelectedToggle()!=null && tglBooleanValue.getSelectedToggle().equals(btnTrue)){
-                booleanList.add(true);
+            if (tfAmericanAnswerText.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "answer field cannot be empty. Try again.");
+                return;
             }
-            else if (tglBooleanValue.getSelectedToggle()!=null && tglBooleanValue.getSelectedToggle().equals(btnFalse)){
+            if (tglBooleanValue.getSelectedToggle() != null && tglBooleanValue.getSelectedToggle().equals(btnTrue)) {
+                booleanList.add(true);
+            } else if (tglBooleanValue.getSelectedToggle() != null && tglBooleanValue.getSelectedToggle().equals(btnFalse)) {
                 booleanList.add(false);
             }
-          answersList.add(tfAmericanAnswerText.getText());
-          tfAmericanAnswerText.clear();
+            answersList.add(tfAmericanAnswerText.getText());
+            tfAmericanAnswerText.clear();
         });
         Button btnSubmit = new Button("Submit final question&answers");
         btnSubmit.setOnAction(actionEvent -> {
-            for (SystemUIEventListener l : allListeners) {
-                l.addMultiChoiceQuestionToModel(tfAddQuestion.getText(),answersList,booleanList);
+            if (answersList.size() < 2) {
+                JOptionPane.showMessageDialog(null, "Minimum 2 answers required.");
+                return;
+            }
+            if (tfAddQuestion.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, "Question field cannot be empty. Try again.");
                 answersList.clear();
                 booleanList.clear();
+                tfAddQuestion.clear();
+                return;
             }
-
+            for (SystemUIEventListener l : allListeners) {
+                l.addMultiChoiceQuestionToModel(tfAddQuestion.getText(), answersList, booleanList);
+                answersList.clear();
+                booleanList.clear();
+                tfAddQuestion.clear();
+            }
         });
-        hbAddAmericanAnswer.getChildren().addAll(lblAddAmericanAnswer,tfAmericanAnswerText);
+        hbAddAmericanAnswer.getChildren().addAll(lblAddAmericanAnswer, tfAmericanAnswerText);
         vbAddAmericanAnswer.setSpacing(5);
-        vbAddAmericanAnswer.getChildren().addAll(hbAddAmericanAnswer,btnTrue,btnFalse,btnSubmitAmericanAnswer,btnSubmit);
-
-
-
-
-        vbAddQuestion.getChildren().addAll(hbQuestionText, chooseTypeLabel, rdoAmericanButton, rdoOpenQuestionButton, hbAddOpenAnswer,vbAddAmericanAnswer, btnReturnToMenu);
+        vbAddAmericanAnswer.getChildren().addAll(hbAddAmericanAnswer, btnTrue, btnFalse, btnSubmitAmericanAnswer, btnSubmit);
+        Button btnReturnToMenu1 = new Button("Return to main menu");
+        btnReturnToMenu1.setOnAction(actionEvent -> theStage.setScene(menuScene));
+        vbAddQuestion.getChildren().addAll(hbQuestionText, chooseTypeLabel, rdoAmericanButton, rdoOpenQuestionButton, hbAddOpenAnswer, vbAddAmericanAnswer, btnReturnToMenu1);
         addQuestionScene = new Scene(vbAddQuestion, 500, 500);
         rdoAmericanButton.setOnAction(actionEvent -> {
-          hbAddOpenAnswer.setVisible(false);
-          vbAddAmericanAnswer.setVisible(true);
+            hbAddOpenAnswer.setVisible(false);
+            vbAddAmericanAnswer.setVisible(true);
         });
         rdoOpenQuestionButton.setOnAction(actionEvent -> {
             vbAddAmericanAnswer.setVisible(false);
@@ -130,11 +156,40 @@ public class SystemView implements AbstractSystemView {
 
         });
 
-        VBox vbMenu = new VBox();
-        vbMenu.getChildren().addAll(displayQuestionsButton, addQuestionButton);
+
+
+        VBox vbUpdateQuestion = new VBox();
+        Label lblUpdatedQuestionNum = new Label("Enter question number below:");
+        TextField tfQuestionNum = new TextField();
+        tfQuestionNum.setMaxSize(50, 50);
+        Label lblUpdatedQuestionText = new Label("Enter the updated text:");
+        TextField tfUpdatedQuestionText = new TextField();
+        Button btnSubmitUpdatedQuestion = new Button("Submit updated answer.");
+        btnSubmitUpdatedQuestion.setOnAction(actionEvent -> {
+            for (SystemUIEventListener l : allListeners) {
+                l.updateQuestionToModel(tfQuestionNum.getText(), tfUpdatedQuestionText.getText());
+            }
+        });
+        vbUpdateQuestion.setSpacing(5);
+        vbUpdateQuestion.setPadding(new Insets(10));
+        Button btnReturnToMenu2 = new Button("Return to main menu");
+        btnReturnToMenu2.setOnAction(actionEvent -> theStage.setScene(menuScene));
+        vbUpdateQuestion.getChildren().addAll(lblUpdatedQuestionNum, tfQuestionNum, lblUpdatedQuestionText, tfUpdatedQuestionText, btnSubmitUpdatedQuestion, btnReturnToMenu2);
+        updateQuestionScene = new Scene(vbUpdateQuestion, 500, 500);
+
+
+
+        VBox vbUpdateAnswer = new VBox();
+        Label lblQuestionNum = new Label("Enter question number below:");
+        TextField tfQuestionNum2 = new TextField();
+        tfQuestionNum2.setMaxSize(50, 50);
+     
+
+
+        vbMenu.getChildren().addAll(btnDisplayQuestions, btnAddQuestion, btnUpdateQuestion, btnUpdateAnswer);
         vbMenu.setSpacing(5);
         vbMenu.setPadding(new Insets(10));
-        menuScene = new Scene(vbMenu, 750, 450);
+        menuScene = new Scene(vbMenu, 500, 500);
         theStage.setScene(menuScene);
         theStage.show();
 
@@ -157,20 +212,11 @@ public class SystemView implements AbstractSystemView {
 
     }
 
-    public void successfulMessage(String msg) {
+    public void showPopUpMessage(String msg) {
         JOptionPane.showMessageDialog(null, msg);
 
 
     }
 
-    public void failedMessage(String msg) {
-        JOptionPane.showMessageDialog(null, msg);
 
-
-    }
-
-    @Override
-    public void questionAlreadyExistsMessage(String msg) {
-        JOptionPane.showMessageDialog(null, msg);
-    }
 }

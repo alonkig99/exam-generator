@@ -1,4 +1,5 @@
 package Controller;
+
 import Listeners.SystemEventListener;
 import Listeners.SystemUIEventListener;
 import View.AbstractSystemView;
@@ -9,7 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class SystemController implements SystemUIEventListener,SystemEventListener{
+public class SystemController implements SystemUIEventListener, SystemEventListener {
     private Manager model;
     private AbstractSystemView view;
 
@@ -22,7 +23,6 @@ public class SystemController implements SystemUIEventListener,SystemEventListen
         this.view.registerListener(this);
 
 
-
     }
 
     @Override
@@ -33,18 +33,19 @@ public class SystemController implements SystemUIEventListener,SystemEventListen
 
     @Override
     public void addQuestionToView() {
-        view.successfulMessage("Question has been added successfully.");
+        view.showPopUpMessage("Question has been added successfully.");
 
     }
 
     @Override
     public void questionAlreadyExistsToView() {
-        view.questionAlreadyExistsMessage("Question already exists.");
+        view.showPopUpMessage("Question already exists.");
     }
 
 
     @Override
     public void updateQuestionToView() {
+        view.showPopUpMessage("Question has been successfully updated.");
 
     }
 
@@ -70,35 +71,49 @@ public class SystemController implements SystemUIEventListener,SystemEventListen
 
     @Override
     public void displayQuestionToModel() {
-       model.fireDisplayQuestions();
+        model.fireDisplayQuestions();
     }
 
     @Override
     public void addOpenQuestionToModel(String text, String answer) {
 
-            model.addOpenQuestion(text, answer);
+        model.addOpenQuestion(text, answer);
 
     }
 
 
-
     @Override
-    public void addMultiChoiceQuestionToModel(String text, LinkedHashSet<String> questionsList, List<Boolean>booleanList) {
+    public void addMultiChoiceQuestionToModel(String text, LinkedHashSet<String> questionsList, List<Boolean> booleanList) {
         model.addMultiQuestion(text);
-Iterator <String>it1 = questionsList.iterator();
-Iterator <Boolean>it2 = booleanList.iterator();
-while (it1.hasNext() && it2.hasNext()) {
-    model.addAnswer(it1.next(),it2.next() );
-}
-
+        Iterator<String> it1 = questionsList.iterator();
+        Iterator<Boolean> it2 = booleanList.iterator();
+        while (it1.hasNext() && it2.hasNext()) {
+            model.addAnswer(it1.next(), it2.next());
+        }
 
 
     }
 
 
-
     @Override
-    public void updateQuestionToModel() {
+    public void updateQuestionToModel(String questionNum, String updatedText) {
+        int num = 0;
+        try {
+            num = Integer.parseInt(questionNum);
+        } catch (Exception e) {
+            view.showPopUpMessage("You must enter an actual number! Try again.");
+            return;
+        }
+        if (model.getQuestionById(num) == null) {
+            view.showPopUpMessage("You must enter a valid question number! Try again.");
+            return;
+        }
+        if (model.questionTextExists(updatedText)) {
+            view.showPopUpMessage("This question text already exists.");
+            return;
+        }
+        model.updateQuestion(num, updatedText);
+
 
     }
 
