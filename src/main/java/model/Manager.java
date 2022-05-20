@@ -22,7 +22,7 @@ public class Manager implements Serializable {
     }
 
     public void fireDisplayQuestions() {
-        for(SystemEventListener l : listeners){
+        for (SystemEventListener l : listeners) {
             l.displayQuestionToView(this.toString());
         }
     }
@@ -30,7 +30,6 @@ public class Manager implements Serializable {
     public int getSize() {
         return questions.size();
     }
-
 
 
     public Exam getCurrentExam() {
@@ -55,11 +54,38 @@ public class Manager implements Serializable {
         return questions.get(index);
     }
 
- public boolean isMultiChoiceQuestion(int serial) {
-        return getQuestionById(serial) instanceof MultiChoiceQuestion;
+    public boolean isMultiChoiceQuestion(int serial) {
+        if (getQuestionById(serial)==null) {
+            fireInvalidQuestionNumberEvent();
+            return false;
+        }
+        if (getQuestionById(serial) instanceof MultiChoiceQuestion) {
+            fireIsMultiChoiceEvent();
+            return true;
+        }
+        fireIsOpenQuestionEvent();
+        return false;
     }
 
+    private void fireInvalidQuestionNumberEvent() {
+        for (SystemEventListener l : listeners) {
+         //   l.checkIfMultiChoiceQuestionToView(false);
 
+        }
+    }
+
+    private void fireIsOpenQuestionEvent() {
+        for (SystemEventListener l : listeners) {
+            l.checkIfMultiChoiceQuestionToView(false);
+
+        }
+    }
+
+    private void fireIsMultiChoiceEvent() {
+        for (SystemEventListener l : listeners) {
+            l.checkIfMultiChoiceQuestionToView(true);
+        }
+    }
 
 
     /**
@@ -67,23 +93,31 @@ public class Manager implements Serializable {
      * @param text   the updated text.
      */
     public void updateQuestion(int serial, String text) {
+        if (getQuestionById(serial)==null) {
+            fireInvalidQuestionNumberEvent();
+            return;
+        }
+        if (questionTextExists(text)) {
+            fireQuestionAlreadyExistsEvent();
+            return;
+        }
         getQuestionById(serial).setQuestionText(text);
         fireUpdatedQuestionEvent();
 
     }
 
     private void fireUpdatedQuestionEvent() {
-        for(SystemEventListener l : listeners){
+        for (SystemEventListener l : listeners) {
             l.updateQuestionToView();
         }
     }
 
 
-    public void addOpenQuestion(String questionText, String answerText)  {
+    public void addOpenQuestion(String questionText, String answerText) {
         for (Question value : questions) {
             if (value instanceof OpenQuestion && value.getQuestionText().equalsIgnoreCase(questionText)) {
-              fireQuestionAlreadyExistsEvent();
-              return;
+                fireQuestionAlreadyExistsEvent();
+                return;
             }
         }
         OpenQuestion question = new OpenQuestion(questionText, answerText);
@@ -93,25 +127,29 @@ public class Manager implements Serializable {
     }
 
 
-    public void addMultiQuestion(String questionText) {
+    public boolean addMultiQuestion(String questionText) {
         for (Question value : questions) {
             if (value instanceof MultiChoiceQuestion && value.getQuestionText().equalsIgnoreCase(questionText)) {
-               fireQuestionAlreadyExistsEvent();
-               return;
+                fireQuestionAlreadyExistsEvent();
+                return false;
             }
         }
         MultiChoiceQuestion question = new MultiChoiceQuestion(questionText);
         questions.add(question);
         FireAddQuestionEvent();
+        return true;
 
     }
+
     private void FireAddQuestionEvent() {
-        for(SystemEventListener l : listeners){
+        for (SystemEventListener l : listeners) {
             l.addQuestionToView();
+            l.updateNumOfQuestionsToView(getSize());
         }
     }
+
     private void fireQuestionAlreadyExistsEvent() {
-        for(SystemEventListener l : listeners) {
+        for (SystemEventListener l : listeners) {
             l.questionAlreadyExistsToView();
         }
     }
@@ -196,7 +234,7 @@ public class Manager implements Serializable {
         }
     }
 
-    public boolean containsQuestion(List<Question>qa, Question q) {
+    public boolean containsQuestion(List<Question> qa, Question q) {
         if (qa.size() == 0) {
             return false;
         }
@@ -341,7 +379,6 @@ public class Manager implements Serializable {
     }
 
 
-
     @Override
     public String toString() {
         if (questions.size() == 0) {
@@ -374,7 +411,8 @@ public class Manager implements Serializable {
         }
         return false;
     }
-    public Question getQuestionExam(int index){
+
+    public Question getQuestionExam(int index) {
         return (Question) currentExam.getQuestions().get(index);
     }
 
@@ -384,6 +422,13 @@ public class Manager implements Serializable {
 
     public void updateOpenQuestionAnswer(int serial, String text) {
         ((OpenQuestion) getQuestionById(serial)).setAnswer(text);
+        FireAddOpenQuestionAnswerEvent();
+    }
+
+    private void FireAddOpenQuestionAnswerEvent() {
+        for (SystemEventListener l : listeners) {
+            l.updateOpenQuestionAnswerToView();
+        }
     }
 
     public void updateMultiChoiceAnswer(int serial, int answerNum, String text) {
@@ -408,14 +453,14 @@ public class Manager implements Serializable {
         return ((MultiChoiceQuestion) getQuestionById(serial)).answerExists(answer);
     }
 
-public void cloneExam() throws CloneNotSupportedException {
-    Exam copyExam= this.currentExam.clone();
-    System.out.println(copyExam.toString());
+    public void cloneExam() throws CloneNotSupportedException {
+        Exam copyExam = this.currentExam.clone();
+        System.out.println(copyExam.toString());
 
-}
+    }
 
 
     public void registerListeners(SystemEventListener listener) {
-       this.listeners.add(listener);
+        this.listeners.add(listener);
     }
 }

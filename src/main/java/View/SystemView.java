@@ -25,7 +25,10 @@ public class SystemView implements AbstractSystemView {
     private List<SystemUIEventListener> allListeners = new ArrayList<>();
     private Scene menuScene, addQuestionScene, updateQuestionScene, updateAnswerScene;
     private final Stage stgDisplayQuestion = new Stage();
-
+    private  VBox vbUpdateOpenQuestionAnswer;
+    private  VBox vbUpdateMultiChoiceAnswer;
+    private final ComboBox<Integer> cmbAddQuestionsNums1 = new ComboBox<>();
+    private final ComboBox<Integer> cmbUpdateQuestionsNums2 = new ComboBox<>();
     //  btnReturnToMenu.setTranslateX(100);
     //  btnReturnToMenu.setTranslateY(100);
     public SystemView(Stage theStage) {
@@ -55,7 +58,13 @@ public class SystemView implements AbstractSystemView {
         });
         Button btnUpdateAnswer = new Button("Update Answer");
         btnUpdateAnswer.setMaxWidth(150);
+        btnUpdateAnswer.setOnAction(actionEvent -> {
+            theStage.setScene(updateAnswerScene);
+            for (SystemUIEventListener l : allListeners) {
+                l.displayQuestionToModel();
+            }
 
+        });
 
 
         VBox vbAddQuestion = new VBox();
@@ -157,33 +166,88 @@ public class SystemView implements AbstractSystemView {
         });
 
 
-
         VBox vbUpdateQuestion = new VBox();
-        Label lblUpdatedQuestionNum = new Label("Enter question number below:");
-        TextField tfQuestionNum = new TextField();
-        tfQuestionNum.setMaxSize(50, 50);
+        Label lblUpdatedQuestionNum = new Label("Choose question number below:");
+      //  TextField tfQuestionNum = new TextField();
+       //  tfQuestionNum.setMaxSize(50, 50);
         Label lblUpdatedQuestionText = new Label("Enter the updated text:");
         TextField tfUpdatedQuestionText = new TextField();
         Button btnSubmitUpdatedQuestion = new Button("Submit updated answer.");
         btnSubmitUpdatedQuestion.setOnAction(actionEvent -> {
+            if (cmbAddQuestionsNums1.getValue()==null) {
+                showPopUpMessage("You must choose an answer number!");
+                return;
+            }
             for (SystemUIEventListener l : allListeners) {
-                l.updateQuestionToModel(tfQuestionNum.getText(), tfUpdatedQuestionText.getText());
+                l.updateQuestionToModel(cmbAddQuestionsNums1.getValue(), tfUpdatedQuestionText.getText());
             }
         });
         vbUpdateQuestion.setSpacing(5);
         vbUpdateQuestion.setPadding(new Insets(10));
         Button btnReturnToMenu2 = new Button("Return to main menu");
         btnReturnToMenu2.setOnAction(actionEvent -> theStage.setScene(menuScene));
-        vbUpdateQuestion.getChildren().addAll(lblUpdatedQuestionNum, tfQuestionNum, lblUpdatedQuestionText, tfUpdatedQuestionText, btnSubmitUpdatedQuestion, btnReturnToMenu2);
+        vbUpdateQuestion.getChildren().addAll(lblUpdatedQuestionNum, cmbAddQuestionsNums1, lblUpdatedQuestionText, tfUpdatedQuestionText, btnSubmitUpdatedQuestion, btnReturnToMenu2);
         updateQuestionScene = new Scene(vbUpdateQuestion, 500, 500);
 
 
-
         VBox vbUpdateAnswer = new VBox();
-        Label lblQuestionNum = new Label("Enter question number below:");
-        TextField tfQuestionNum2 = new TextField();
-        tfQuestionNum2.setMaxSize(50, 50);
-     
+        HBox hbQuestionNum = new HBox();
+        Label lblQuestionNum = new Label("Enter question number:");
+       // TextField tfQuestionNumUpdateAnswer = new TextField();
+      //  tfQuestionNumUpdateAnswer.setMaxSize(50, 50);
+        Button btnSubmitNum = new Button("Submit");
+        hbQuestionNum.getChildren().addAll(lblQuestionNum, cmbUpdateQuestionsNums2, btnSubmitNum);
+        hbQuestionNum.setPadding(new Insets(10));
+        hbQuestionNum.setSpacing(10);
+        btnSubmitNum.setOnAction(actionEvent -> {
+            for (SystemUIEventListener l : allListeners) {
+                l.checkIfMultiChoiceQuestionToModel(cmbUpdateQuestionsNums2.getValue());
+            }
+        });
+        vbUpdateOpenQuestionAnswer = new VBox();
+        vbUpdateOpenQuestionAnswer.setVisible(false);
+        Label lblUpdatedAnswer = new Label("Enter updated answer below:");
+        TextField tfEnterUpdatedAnswer = new TextField();
+        Button btnSubmitUpdatedAnswer = new Button("Submit answer");
+        btnSubmitUpdatedAnswer.setOnAction(actionEvent -> {
+            for (SystemUIEventListener l : allListeners) {
+                l.updateOpenQuestionAnswerToModel(tfQuestionNumUpdateAnswer.getText(), tfEnterUpdatedAnswer.getText());
+            }
+            stgDisplayQuestion.close();
+            for (SystemUIEventListener l : allListeners) {
+                l.displayQuestionToModel();
+            }
+
+        });
+        vbUpdateOpenQuestionAnswer.getChildren().addAll(lblUpdatedAnswer, tfEnterUpdatedAnswer, btnSubmitUpdatedAnswer);
+
+        vbUpdateMultiChoiceAnswer= new VBox();
+        Label lblPickAnswer = new Label("Enter answer number:");
+        TextField tfPickAnswer = new TextField();
+        tfPickAnswer.setMaxSize(50, 50);
+        Label tfEnterText = new Label();
+        TextField tfUpdatedText = new TextField();
+        Button btnSubmitAnswer = new Button("Submit answer");
+        btnSubmitAnswer.setOnAction(actionEvent -> {
+            for (SystemUIEventListener l : allListeners) {
+                l.updateMultiChoiceAnswerToModel(tfQuestionNumUpdateAnswer.getText(),tfPickAnswer.getText(),tfUpdatedText.getText());
+            }
+            stgDisplayQuestion.close();
+            for (SystemUIEventListener l : allListeners) {
+                l.displayQuestionToModel();
+            }
+
+        });
+
+
+
+
+
+        Button btnReturnToMenu3 = new Button("Return to menu");
+        btnReturnToMenu3.setOnAction(actionEvent -> theStage.setScene(menuScene));
+        vbUpdateAnswer.setPadding(new Insets(10));
+        vbUpdateAnswer.getChildren().addAll(hbQuestionNum, vbUpdateOpenQuestionAnswer, btnReturnToMenu3);
+        updateAnswerScene = new Scene(vbUpdateAnswer, 500, 500);
 
 
         vbMenu.getChildren().addAll(btnDisplayQuestions, btnAddQuestion, btnUpdateQuestion, btnUpdateAnswer);
@@ -215,6 +279,20 @@ public class SystemView implements AbstractSystemView {
     public void showPopUpMessage(String msg) {
         JOptionPane.showMessageDialog(null, msg);
 
+
+    }
+
+    @Override
+    public void isMultiChoiceQuestion(boolean isMultiChoice) {
+        if (!(isMultiChoice)) {
+            vbUpdateOpenQuestionAnswer.setVisible(true);
+        }
+
+    }
+
+    @Override
+    public void updateNumOfQuestionsToComboBox(int numOfQuestions) {
+        cmbAddQuestionsNums1.getItems().add(numOfQuestions);
 
     }
 

@@ -4,7 +4,6 @@ import Listeners.SystemEventListener;
 import Listeners.SystemUIEventListener;
 import View.AbstractSystemView;
 import model.Manager;
-
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,9 +49,34 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
-    public void updateAnswerToView() {
+    public void checkIfMultiChoiceQuestionToView(boolean isMultiChoice) {
+        view.isMultiChoiceQuestion(isMultiChoice);
 
     }
+
+    @Override
+    public void updateOpenQuestionAnswerToView() {
+        view.showPopUpMessage("Answer has been successfully updated.");
+
+    }
+
+    @Override
+    public void updateNumOfQuestionsToView(int numOfQuestions) {
+        view.updateNumOfQuestionsToComboBox(numOfQuestions);
+
+    }
+
+    @Override
+    public void invalidQuestionNumberToView() {
+        view.showPopUpMessage("You must enter a valid question number.");
+    }
+
+    @Override
+    public void updateMultiChoiceAnswerToView() {
+
+    }
+
+
 
     @Override
     public void deleteAnswerToView() {
@@ -84,43 +108,48 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
 
     @Override
     public void addMultiChoiceQuestionToModel(String text, LinkedHashSet<String> questionsList, List<Boolean> booleanList) {
-        model.addMultiQuestion(text);
+        if(model.addMultiQuestion(text)){
         Iterator<String> it1 = questionsList.iterator();
         Iterator<Boolean> it2 = booleanList.iterator();
         while (it1.hasNext() && it2.hasNext()) {
             model.addAnswer(it1.next(), it2.next());
         }
+        }
 
 
     }
 
 
     @Override
-    public void updateQuestionToModel(String questionNum, String updatedText) {
-        int num = 0;
-        try {
-            num = Integer.parseInt(questionNum);
-        } catch (Exception e) {
-            view.showPopUpMessage("You must enter an actual number! Try again.");
-            return;
-        }
-        if (model.getQuestionById(num) == null) {
-            view.showPopUpMessage("You must enter a valid question number! Try again.");
-            return;
-        }
-        if (model.questionTextExists(updatedText)) {
-            view.showPopUpMessage("This question text already exists.");
-            return;
-        }
-        model.updateQuestion(num, updatedText);
+    public void updateQuestionToModel(int questionNum, String updatedText) {
+
+        model.updateQuestion(questionNum, updatedText);
 
 
     }
 
     @Override
-    public void updateAnswerToModel() {
+    public void checkIfMultiChoiceQuestionToModel(int questionNum) {
+        model.isMultiChoiceQuestion(questionNum);
+    }
+
+    @Override
+    public void updateOpenQuestionAnswerToModel(String num, String text) {
+        model.updateOpenQuestionAnswer(Integer.parseInt(num),text);
 
     }
+
+    @Override
+    public void updateMultiChoiceAnswerToModel(String questionNum, String answerNum, String questionText) {
+        int answerSerial = stringToInteger(answerNum);
+        if (answerSerial < 1 || answerSerial > model.getNumOfAnswers(Integer.parseInt(questionNum))){
+            view.showPopUpMessage("Enter a valid answer number.");
+            return;
+        }
+      model.updateMultiChoiceAnswer(Integer.parseInt(questionNum),Integer.parseInt(answerNum),questionText);
+
+    }
+
 
     @Override
     public void deleteAnswerToModel() {
@@ -141,4 +170,6 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     public void copyLastExam() {
 
     }
+
+
 }

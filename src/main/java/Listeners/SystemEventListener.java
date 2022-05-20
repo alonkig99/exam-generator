@@ -5,7 +5,11 @@ public interface SystemEventListener {
     void addQuestionToView();
     void questionAlreadyExistsToView();
     void updateQuestionToView();
-    void updateAnswerToView();
+    void checkIfMultiChoiceQuestionToView(boolean isMultiChoice);
+    void updateOpenQuestionAnswerToView();
+    void updateNumOfQuestionsToView(int numOfQuestions);
+    void invalidQuestionNumberToView();
+    void updateMultiChoiceAnswerToView();
     void deleteAnswerToView();
     void generateManualExamToView();
     void generateAutomaticExamToView();
