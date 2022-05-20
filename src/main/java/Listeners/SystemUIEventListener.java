@@ -10,8 +10,9 @@ public interface SystemUIEventListener {
     void addMultiChoiceQuestionToModel(String text, LinkedHashSet<String> answersList, List<Boolean>booleanValues);
     void updateQuestionToModel(int questionNum, String text);
     void checkIfMultiChoiceQuestionToModel(int num);
-    void updateOpenQuestionAnswerToModel(String num, String text);
-    void updateMultiChoiceAnswerToModel(String questionNum, String answerNum, String questionText);
+    void updateOpenQuestionAnswerToModel(int num, String text);
+    void updateMultiChoiceAnswerToModel(int questionNum, int answerNum, String questionText);
+    void updateNumberOfAnswersToModel(int serial);
     void deleteAnswerToModel();
     void generateManualExamToModel();
     void generateAutomaticExamToModel();

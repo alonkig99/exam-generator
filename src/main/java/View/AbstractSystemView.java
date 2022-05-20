@@ -9,7 +9,7 @@ public interface AbstractSystemView {
     void showPopUpMessage(String msg);
     void isMultiChoiceQuestion(boolean isMultiChoice);
     void updateNumOfQuestionsToComboBox(int numOfQuestions);
-
+    void updateNumOfAnswersToComboBox(int numOfAnswers);
 
 
 

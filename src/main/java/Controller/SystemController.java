@@ -67,12 +67,25 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
+    public void updateNumOfAnswersToView(int numOfAnswers) {
+        view.updateNumOfAnswersToComboBox(numOfAnswers);
+
+    }
+
+    @Override
     public void invalidQuestionNumberToView() {
         view.showPopUpMessage("You must enter a valid question number.");
     }
 
     @Override
+    public void invalidAnswerNumberToView() {
+        view.showPopUpMessage("You must enter a valid answer number.");
+    }
+
+    @Override
     public void updateMultiChoiceAnswerToView() {
+        view.showPopUpMessage("Answer has been successfully updated.");
+
 
     }
 
@@ -134,19 +147,21 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
-    public void updateOpenQuestionAnswerToModel(String num, String text) {
-        model.updateOpenQuestionAnswer(Integer.parseInt(num),text);
+    public void updateOpenQuestionAnswerToModel(int num, String text) {
+        model.updateOpenQuestionAnswer(num,text);
 
     }
 
     @Override
-    public void updateMultiChoiceAnswerToModel(String questionNum, String answerNum, String questionText) {
-        int answerSerial = stringToInteger(answerNum);
-        if (answerSerial < 1 || answerSerial > model.getNumOfAnswers(Integer.parseInt(questionNum))){
-            view.showPopUpMessage("Enter a valid answer number.");
-            return;
-        }
-      model.updateMultiChoiceAnswer(Integer.parseInt(questionNum),Integer.parseInt(answerNum),questionText);
+    public void updateMultiChoiceAnswerToModel(int questionNum, int answerNum, String questionText) {
+
+        model.updateMultiChoiceAnswer(questionNum,answerNum,questionText);
+
+    }
+
+    @Override
+    public void updateNumberOfAnswersToModel(int serial) {
+        model.fireUpdateNumOfAnswersEvent(serial);
 
     }
 

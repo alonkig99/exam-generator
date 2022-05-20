@@ -69,8 +69,8 @@ public class Manager implements Serializable {
 
     private void fireInvalidQuestionNumberEvent() {
         for (SystemEventListener l : listeners) {
-         //   l.checkIfMultiChoiceQuestionToView(false);
 
+           l.invalidQuestionNumberToView();
         }
     }
 
@@ -122,7 +122,7 @@ public class Manager implements Serializable {
         }
         OpenQuestion question = new OpenQuestion(questionText, answerText);
         questions.add(question);
-        FireAddQuestionEvent();
+        fireAddQuestionEvent();
 
     }
 
@@ -136,28 +136,28 @@ public class Manager implements Serializable {
         }
         MultiChoiceQuestion question = new MultiChoiceQuestion(questionText);
         questions.add(question);
-        FireAddQuestionEvent();
+        fireAddQuestionEvent();
         return true;
 
     }
 
-    private void FireAddQuestionEvent() {
+    private void fireAddQuestionEvent() {
         for (SystemEventListener l : listeners) {
             l.addQuestionToView();
             l.updateNumOfQuestionsToView(getSize());
         }
     }
-
+    public void fireUpdateNumOfAnswersEvent(int serial) {
+        for (SystemEventListener l : listeners) {
+            l.updateNumOfAnswersToView(getNumOfAnswers(serial));
+        }
+    }
     private void fireQuestionAlreadyExistsEvent() {
         for (SystemEventListener l : listeners) {
             l.questionAlreadyExistsToView();
         }
     }
 
-    /**
-     * @param text
-     * @return
-     */
 
     public boolean questionTextExists(String text) {
         for (Question question : questions) {
@@ -417,8 +417,14 @@ public class Manager implements Serializable {
     }
 
     public boolean addAnswer(String text, boolean indicator) {
-        return ((MultiChoiceQuestion) questions.get(getSize() - 1)).addAnswer(text, indicator);
+        return((MultiChoiceQuestion) questions.get(getSize() - 1)).addAnswer(text, indicator);
+
+
+
+
     }
+
+
 
     public void updateOpenQuestionAnswer(int serial, String text) {
         ((OpenQuestion) getQuestionById(serial)).setAnswer(text);
@@ -431,8 +437,26 @@ public class Manager implements Serializable {
         }
     }
 
-    public void updateMultiChoiceAnswer(int serial, int answerNum, String text) {
+    public boolean updateMultiChoiceAnswer(int serial, int answerNum, String text) {
+        if (answerNum < 1 || answerNum > getNumOfAnswers(serial)){
+            fireInvalidAnswerNumberEvent();
+            return false;
+        }
         ((MultiChoiceQuestion) getQuestionById(serial)).getAnswerById(answerNum).setAnswer(text);
+        fireUpdatedMultiChoiceAnswerEvent();
+        return true;
+    }
+
+    private void fireUpdatedMultiChoiceAnswerEvent() {
+        for (SystemEventListener l : listeners) {
+            l.updateMultiChoiceAnswerToView();
+        }
+    }
+
+    private void fireInvalidAnswerNumberEvent() {
+        for (SystemEventListener l : listeners) {
+            l.invalidAnswerNumberToView();
+        }
     }
 
     public void setAnswerTrueFalse(int serial, int answerNum, boolean indicator) {
