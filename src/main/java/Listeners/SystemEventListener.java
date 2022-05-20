@@ -13,8 +13,9 @@ public interface SystemEventListener {
     void invalidAnswerNumberToView();
     void updateMultiChoiceAnswerToView();
     void deleteAnswerToView();
+    void cantDeleteAnswerToView();
     void generateManualExamToView();
-    void generateAutomaticExamToView();
+    void generateAutomaticExamToView(String examToString);
 
 
 }

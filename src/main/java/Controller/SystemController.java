@@ -4,6 +4,8 @@ import Listeners.SystemEventListener;
 import Listeners.SystemUIEventListener;
 import View.AbstractSystemView;
 import model.Manager;
+
+import java.io.FileNotFoundException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -20,8 +22,6 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
 
         this.model.registerListeners(this);
         this.view.registerListener(this);
-
-
     }
 
     @Override
@@ -45,19 +45,16 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     @Override
     public void updateQuestionToView() {
         view.showPopUpMessage("Question has been successfully updated.");
-
     }
 
     @Override
     public void checkIfMultiChoiceQuestionToView(boolean isMultiChoice) {
         view.isMultiChoiceQuestion(isMultiChoice);
-
     }
 
     @Override
     public void updateOpenQuestionAnswerToView() {
         view.showPopUpMessage("Answer has been successfully updated.");
-
     }
 
     @Override
@@ -85,14 +82,18 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     @Override
     public void updateMultiChoiceAnswerToView() {
         view.showPopUpMessage("Answer has been successfully updated.");
-
-
     }
-
 
 
     @Override
     public void deleteAnswerToView() {
+        view.showPopUpMessage("Answer has been successfully deleted.");
+
+    }
+
+    @Override
+    public void cantDeleteAnswerToView() {
+        view.showPopUpMessage("Cannot delete because there are less than 3 answers.");
 
     }
 
@@ -101,10 +102,6 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
 
     }
 
-    @Override
-    public void generateAutomaticExamToView() {
-
-    }
 
     @Override
     public void displayQuestionToModel() {
@@ -118,27 +115,22 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
 
     }
 
-
     @Override
     public void addMultiChoiceQuestionToModel(String text, LinkedHashSet<String> questionsList, List<Boolean> booleanList) {
-        if(model.addMultiQuestion(text)){
-        Iterator<String> it1 = questionsList.iterator();
-        Iterator<Boolean> it2 = booleanList.iterator();
-        while (it1.hasNext() && it2.hasNext()) {
-            model.addAnswer(it1.next(), it2.next());
-        }
+        if (model.addMultiQuestion(text)) {
+            Iterator<String> it1 = questionsList.iterator();
+            Iterator<Boolean> it2 = booleanList.iterator();
+            while (it1.hasNext() && it2.hasNext()) {
+                model.addAnswer(it1.next(), it2.next());
+            }
         }
 
 
     }
 
-
     @Override
     public void updateQuestionToModel(int questionNum, String updatedText) {
-
         model.updateQuestion(questionNum, updatedText);
-
-
     }
 
     @Override
@@ -148,42 +140,45 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
 
     @Override
     public void updateOpenQuestionAnswerToModel(int num, String text) {
-        model.updateOpenQuestionAnswer(num,text);
-
+        model.updateOpenQuestionAnswer(num, text);
     }
 
     @Override
     public void updateMultiChoiceAnswerToModel(int questionNum, int answerNum, String questionText) {
-
-        model.updateMultiChoiceAnswer(questionNum,answerNum,questionText);
-
+        model.updateMultiChoiceAnswer(questionNum, answerNum, questionText);
     }
 
     @Override
     public void updateNumberOfAnswersToModel(int serial) {
         model.fireUpdateNumOfAnswersEvent(serial);
-
     }
 
-
     @Override
-    public void deleteAnswerToModel() {
+    public void deleteAnswerToModel(int questionNum, int answerNum) {
 
+        model.deleteAnswer(questionNum, answerNum);
     }
 
     @Override
     public void generateManualExamToModel() {
-
     }
 
     @Override
-    public void generateAutomaticExamToModel() {
+    public void generateAutomaticExamToModel(int numOfQuestions) {
+        try {
+            model.generateExam(numOfQuestions, model);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void generateAutomaticExamToView(String examToString) {
+        view.displayGeneratedExam(examToString);
 
     }
 
     @Override
     public void copyLastExam() {
-
     }
 
 

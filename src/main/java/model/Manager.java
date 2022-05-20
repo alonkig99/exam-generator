@@ -1,6 +1,7 @@
 package model;
 
 import Listeners.SystemEventListener;
+import Listeners.SystemUIEventListener;
 
 import java.io.*;
 import java.util.*;
@@ -148,6 +149,9 @@ public class Manager implements Serializable {
         }
     }
     public void fireUpdateNumOfAnswersEvent(int serial) {
+        if (getQuestionById(serial) instanceof OpenQuestion) {
+            return;
+        }
         for (SystemEventListener l : listeners) {
             l.updateNumOfAnswersToView(getNumOfAnswers(serial));
         }
@@ -252,11 +256,10 @@ public class Manager implements Serializable {
      * @param repository     the repository from which the random questions are chosen.
      * @return the generated exam.
      */
-    public void generateExam(int numOfQuestions, Manager repository) throws NumOfQuestionsOutOfBoundException, FileNotFoundException {
+    public void generateExam(int numOfQuestions, Manager repository) throws FileNotFoundException {
         Comparator<Question> c = new CompareByAnswerLength();
         currentExam = new Exam();
 
-        checkIfNumOfQuestionsInBound(numOfQuestions, repository);
         for (int i = 0; i < numOfQuestions; i++) {
             Question q = repository.selectRandomQuestion();
             while (containsQuestion(currentExam.getQuestions(), q)) {
@@ -304,8 +307,14 @@ public class Manager implements Serializable {
         Collections.sort(currentExam.getQuestions(), c);
         currentExam.loadExamQuestionsToFile();
         currentExam.loadExamSolutionsToFile();
+         fireGenerateExamEvent();
 
-        System.out.println(currentExam.getQuestions());
+    }
+
+    private void fireGenerateExamEvent() {
+        for(SystemEventListener l : listeners) {
+            l.generateAutomaticExamToView(currentExam.toString());
+        }
     }
 
 
@@ -464,8 +473,28 @@ public class Manager implements Serializable {
     }
 
     public void deleteAnswer(int serial, int answerNum) {
-        ((MultiChoiceQuestion) getQuestionById(serial)).deleteAnswer(answerNum);
 
+             if (getNumOfAnswers(serial) <= 2) {
+                 fireCantDeleteAnswerEvent();
+                 return;
+             }
+
+        ((MultiChoiceQuestion) getQuestionById(serial)).deleteAnswer(answerNum-1);
+        fireUpdateNumOfAnswersEvent(serial);
+        fireDeleteAnswerEvent();
+
+    }
+
+    private void fireCantDeleteAnswerEvent() {
+        for (SystemEventListener l : listeners) {
+            l.cantDeleteAnswerToView();
+        }
+    }
+
+    private void fireDeleteAnswerEvent() {
+        for (SystemEventListener l : listeners) {
+            l.deleteAnswerToView();
+        }
     }
 
     public int getNumOfAnswers(int serial) {

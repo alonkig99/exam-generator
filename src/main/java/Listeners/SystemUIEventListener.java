@@ -1,6 +1,7 @@
 package Listeners;
 
 
+import model.Manager;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -13,9 +14,9 @@ public interface SystemUIEventListener {
     void updateOpenQuestionAnswerToModel(int num, String text);
     void updateMultiChoiceAnswerToModel(int questionNum, int answerNum, String questionText);
     void updateNumberOfAnswersToModel(int serial);
-    void deleteAnswerToModel();
+    void deleteAnswerToModel(int questionNum, int answerNum);
     void generateManualExamToModel();
-    void generateAutomaticExamToModel();
+    void generateAutomaticExamToModel(int numOfQuestions);
     void copyLastExam();
 
 }

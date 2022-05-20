@@ -10,7 +10,7 @@ public interface AbstractSystemView {
     void isMultiChoiceQuestion(boolean isMultiChoice);
     void updateNumOfQuestionsToComboBox(int numOfQuestions);
     void updateNumOfAnswersToComboBox(int numOfAnswers);
-
+    void displayGeneratedExam(String examTOString);
 
 
 
