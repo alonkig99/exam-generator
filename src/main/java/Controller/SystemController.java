@@ -6,6 +6,7 @@ import View.AbstractSystemView;
 import model.Manager;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -19,6 +20,14 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     public SystemController(Manager model, AbstractSystemView view) {
         this.model = model;
         this.view = view;
+        /*
+        try {
+            model.loadToBinaryFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+         */
 
         this.model.registerListeners(this);
         this.view.registerListener(this);

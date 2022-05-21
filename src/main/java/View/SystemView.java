@@ -9,12 +9,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 import javax.swing.*;
 
 import javafx.scene.control.ScrollPane;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,8 +37,6 @@ public class SystemView implements AbstractSystemView {
     private final ComboBox<Integer> cmbAnswersNums1 = new ComboBox<>();
     private final ComboBox<Integer> cmbAnswersNums2 = new ComboBox<>();
 
-    //  btnReturnToMenu.setTranslateX(100);
-    //  btnReturnToMenu.setTranslateY(100);
     public SystemView(Stage theStage) {
         theStage.setTitle("Exam Generator");
         VBox vbMenu = new VBox();
@@ -53,8 +53,8 @@ public class SystemView implements AbstractSystemView {
         Button btnAddQuestion = new Button("Add Question");
         btnAddQuestion.setMaxWidth(150);
         btnAddQuestion.setOnAction(actionEvent -> {
-          stgDisplayQuestion.close();
-          theStage.setScene(addQuestionScene);
+            stgDisplayQuestion.close();
+            theStage.setScene(addQuestionScene);
         });
 
         Button btnUpdateQuestion = new Button("Update Question");
@@ -97,7 +97,10 @@ public class SystemView implements AbstractSystemView {
         });
 
         Button btnSaveAndExit = new Button("Save to file & Exit");
-        btnSaveAndExit.setMaxWidth(150);
+          btnSaveAndExit.setTranslateX(280);
+          btnSaveAndExit.setTranslateY(200);
+          btnSaveAndExit.setMaxWidth(150);
+
 
         VBox vbAddQuestion = new VBox();
         HBox hbQuestionText = new HBox();
@@ -219,6 +222,8 @@ public class SystemView implements AbstractSystemView {
         vbUpdateQuestion.setSpacing(5);
         vbUpdateQuestion.setPadding(new Insets(10));
         Button btnReturnToMenu2 = new Button("Return to main menu");
+        btnReturnToMenu2.setTranslateX(280);
+        btnReturnToMenu2.setTranslateY(200);
         btnReturnToMenu2.setOnAction(actionEvent -> {
             stgDisplayQuestion.close();
             theStage.setScene(menuScene);
@@ -266,6 +271,8 @@ public class SystemView implements AbstractSystemView {
         Label lblEnterText = new Label("Enter the updated text:");
         TextField tfUpdatedText = new TextField();
         Button btnSubmitAnswer = new Button("Submit answer");
+        vbUpdateMultiChoiceAnswer.setPadding(new Insets(10));
+        vbUpdateMultiChoiceAnswer.setSpacing(10);
         vbUpdateMultiChoiceAnswer.getChildren().addAll(lblPickAnswer, cmbAnswersNums1, lblEnterText, tfUpdatedText, btnSubmitAnswer);
         btnSubmitAnswer.setOnAction(actionEvent -> {
             if (cmbAnswersNums1.getValue() == null) {
@@ -282,6 +289,7 @@ public class SystemView implements AbstractSystemView {
             tfUpdatedText.clear();
         });
         Button btnReturnToMenu3 = new Button("Return to menu");
+
         btnReturnToMenu3.setOnAction(actionEvent -> {
             stgDisplayQuestion.close();
             theStage.setScene(menuScene);
@@ -307,7 +315,7 @@ public class SystemView implements AbstractSystemView {
         Button btnClickToDelete = new Button("Delete Answer");
         btnClickToDelete.setOnAction(actionEvent -> {
 
-            if (cmbQuestionsNums3.getValue()==null || cmbAnswersNums2.getValue()==null) {
+            if (cmbQuestionsNums3.getValue() == null || cmbAnswersNums2.getValue() == null) {
                 return;
             }
             for (SystemUIEventListener l : listeners) {
@@ -334,7 +342,7 @@ public class SystemView implements AbstractSystemView {
         Label lblNumOfQuestionsToGenerate = new Label("Choose number of questions:");
         Button btnClickToGenerate = new Button("Click to generate exam");
         btnClickToGenerate.setOnAction(actionEvent -> {
-            if (cmbQuestionsNums4.getValue()==null) {
+            if (cmbQuestionsNums4.getValue() == null) {
                 showPopUpMessage("You must choose number of questions.");
                 return;
             }
@@ -342,13 +350,13 @@ public class SystemView implements AbstractSystemView {
                 l.generateAutomaticExamToModel(cmbQuestionsNums4.getValue());
             }
         });
-        Button btnReturnToMenu5 = new Button("Return to menu");
-        btnReturnToMenu5.setOnAction(actionEvent -> {
+        Button btnReturnToMenu6 = new Button("Return to menu");
+        btnReturnToMenu6.setOnAction(actionEvent -> {
             theStage.setScene(menuScene);
         });
         vbGenerateExam.setPadding(new Insets(10));
         vbGenerateExam.setSpacing(10);
-        vbGenerateExam.getChildren().addAll(lblNumOfQuestionsToGenerate, cmbQuestionsNums4, btnClickToGenerate, btnReturnToMenu5);
+        vbGenerateExam.getChildren().addAll(lblNumOfQuestionsToGenerate, cmbQuestionsNums4, btnClickToGenerate, btnReturnToMenu6);
         generateExamScene = new Scene(vbGenerateExam, 500, 500);
 
 
@@ -375,7 +383,7 @@ public class SystemView implements AbstractSystemView {
         stgDisplayQuestion.setX(100);
         stgDisplayQuestion.setY(100);
         ScrollPane sp = new ScrollPane(new Label(s));
-        stgDisplayQuestion.setScene(new Scene(sp, 300, 250));
+        stgDisplayQuestion.setScene(new Scene(sp, 282, 250));
         stgDisplayQuestion.showAndWait();
 
     }
@@ -418,7 +426,6 @@ public class SystemView implements AbstractSystemView {
     @Override
     public void displayGeneratedExam(String examToString) {
         stgDisplayGeneratedExam.setTitle("Exam");
-
         ScrollPane sp = new ScrollPane(new Label(examToString));
         stgDisplayGeneratedExam.setScene(new Scene(sp, 300, 250));
         stgDisplayGeneratedExam.showAndWait();
