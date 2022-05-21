@@ -10,8 +10,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import javax.swing.*;
+
 import javafx.scene.control.ScrollPane;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -56,7 +59,7 @@ public class SystemView implements AbstractSystemView {
         btnUpdateQuestion.setMaxWidth(150);
         btnUpdateQuestion.setOnAction(actionEvent -> {
 
-           stgDisplayQuestion.close();
+            stgDisplayQuestion.close();
             theStage.setScene(updateQuestionScene);
             for (SystemUIEventListener l : listeners) {
                 l.displayQuestionToModel();
@@ -93,9 +96,9 @@ public class SystemView implements AbstractSystemView {
         });
 
         Button btnSaveAndExit = new Button("Save to file & Exit");
-          btnSaveAndExit.setTranslateX(280);
-          btnSaveAndExit.setTranslateY(200);
-          btnSaveAndExit.setMaxWidth(150);
+        btnSaveAndExit.setTranslateX(280);
+        btnSaveAndExit.setTranslateY(200);
+        btnSaveAndExit.setMaxWidth(150);
 
 
         VBox vbAddQuestion = new VBox();
@@ -235,6 +238,8 @@ public class SystemView implements AbstractSystemView {
             for (SystemUIEventListener l : listeners) {
                 l.checkIfMultiChoiceQuestionToModel(cmbQuestionsNums2.getValue());
             }
+            cmbAnswersNums1.getItems().clear();
+            cmbAnswersNums2.getItems().clear();
             for (SystemUIEventListener l : listeners) {
                 l.updateNumberOfAnswersToModel(cmbQuestionsNums2.getValue());
             }
@@ -283,10 +288,13 @@ public class SystemView implements AbstractSystemView {
                 l.updateMultiChoiceAnswerToModel(cmbQuestionsNums2.getValue(), cmbAnswersNums1.getValue(), tfUpdatedText.getText());
             }
             tfUpdatedText.clear();
+
         });
         Button btnReturnToMenu3 = new Button("Return to menu");
 
         btnReturnToMenu3.setOnAction(actionEvent -> {
+            cmbAnswersNums1.getSelectionModel().clearSelection();
+            cmbQuestionsNums2.getSelectionModel().clearSelection();
             stgDisplayQuestion.close();
             theStage.setScene(menuScene);
         });
@@ -325,6 +333,7 @@ public class SystemView implements AbstractSystemView {
         Button btnReturnToMenu4 = new Button("Return to menu");
         btnReturnToMenu4.setOnAction(actionEvent -> {
             cmbQuestionsNums3.getSelectionModel().clearSelection();
+            cmbAnswersNums2.getSelectionModel().clearSelection();
             stgDisplayQuestion.close();
             theStage.setScene(menuScene);
         });

@@ -14,7 +14,7 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
         Manager theModel = new Manager();
         AbstractSystemView view = new SystemView(primaryStage);
         SystemController controller = new SystemController(theModel, view);
