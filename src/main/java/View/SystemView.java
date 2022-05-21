@@ -9,14 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
-
 import javax.swing.*;
-
 import javafx.scene.control.ScrollPane;
-
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -60,7 +55,8 @@ public class SystemView implements AbstractSystemView {
         Button btnUpdateQuestion = new Button("Update Question");
         btnUpdateQuestion.setMaxWidth(150);
         btnUpdateQuestion.setOnAction(actionEvent -> {
-            stgDisplayQuestion.close();
+
+           stgDisplayQuestion.close();
             theStage.setScene(updateQuestionScene);
             for (SystemUIEventListener l : listeners) {
                 l.displayQuestionToModel();
@@ -384,7 +380,7 @@ public class SystemView implements AbstractSystemView {
         stgDisplayQuestion.setY(100);
         ScrollPane sp = new ScrollPane(new Label(s));
         stgDisplayQuestion.setScene(new Scene(sp, 282, 250));
-        stgDisplayQuestion.showAndWait();
+        stgDisplayQuestion.show();
 
     }
 
@@ -428,7 +424,7 @@ public class SystemView implements AbstractSystemView {
         stgDisplayGeneratedExam.setTitle("Exam");
         ScrollPane sp = new ScrollPane(new Label(examToString));
         stgDisplayGeneratedExam.setScene(new Scene(sp, 300, 250));
-        stgDisplayGeneratedExam.showAndWait();
+        stgDisplayGeneratedExam.show();
     }
 
 }
