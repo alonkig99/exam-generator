@@ -301,7 +301,7 @@ public class SystemView implements AbstractSystemView {
 
 
         VBox vbDeleteAnswer = new VBox();
-        Label lblChooseAnsNumber = new Label("Choose answer number:");
+        Label lblChooseAnsNumber = new Label("Choose question number:");
         cmbQuestionsNums3.setOnAction(actionEvent -> {
             cmbAnswersNums2.getItems().clear();
             if (cmbQuestionsNums3.getValue() == null) {

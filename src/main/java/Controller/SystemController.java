@@ -26,7 +26,7 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
          */
 
         this.model.registerListeners(this);
