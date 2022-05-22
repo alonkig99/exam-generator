@@ -371,8 +371,8 @@ public class SystemView implements AbstractSystemView {
         vbGenerateExam.getChildren().addAll(lblNumOfQuestionsToGenerate, cmbQuestionsNums4, btnClickToGenerate, btnReturnToMenu6);
         generateExamScene = new Scene(vbGenerateExam, 500, 500);
 
-        InputStream stream = new FileInputStream("src/main/java/View/aK3fkXt7_400x400.jpg");
-        InputStream stream2 = new FileInputStream("src/main/java/View/ExsgjWDUYAMmf3M.jpg");
+        InputStream stream = new FileInputStream("src/main/java/View/aK3fkXt7_400x400.dat");
+        InputStream stream2 = new FileInputStream("src/main/java/View/ExsgjWDUYAMmf3M.dat");
         Image img = new Image(stream);
         Image img2 = new Image(stream2);
         HBox hbTheFuck = new HBox();
