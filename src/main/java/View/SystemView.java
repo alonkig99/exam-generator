@@ -7,14 +7,21 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javax.swing.*;
+
 
 import javafx.scene.control.ScrollPane;
 
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,7 +42,7 @@ public class SystemView implements AbstractSystemView {
     private final ComboBox<Integer> cmbAnswersNums1 = new ComboBox<>();
     private final ComboBox<Integer> cmbAnswersNums2 = new ComboBox<>();
 
-    public SystemView(Stage theStage) {
+    public SystemView(Stage theStage) throws FileNotFoundException {
         theStage.setTitle("Exam Generator");
         VBox vbMenu = new VBox();
 
@@ -364,8 +371,19 @@ public class SystemView implements AbstractSystemView {
         vbGenerateExam.getChildren().addAll(lblNumOfQuestionsToGenerate, cmbQuestionsNums4, btnClickToGenerate, btnReturnToMenu6);
         generateExamScene = new Scene(vbGenerateExam, 500, 500);
 
-
-        vbMenu.getChildren().addAll(btnDisplayQuestions, btnAddQuestion, btnUpdateQuestion, btnUpdateAnswer, btnDeleteAnswer, btnManualExam, btnGenerateExam, btnSaveAndExit);
+        InputStream stream = new FileInputStream("src/main/java/View/aK3fkXt7_400x400.jpg");
+        InputStream stream2 = new FileInputStream("src/main/java/View/ExsgjWDUYAMmf3M.jpg");
+        Image img = new Image(stream);
+        Image img2 = new Image(stream2);
+        HBox hbTheFuck = new HBox();
+        ImageView  imageView=new ImageView(img);
+        ImageView imageView2 = new ImageView(img2);
+        hbTheFuck.getChildren().addAll(imageView,imageView2);
+        imageView.setFitHeight(200);
+        imageView.setFitWidth(200);
+        imageView2.setFitHeight(200);
+        imageView2.setFitWidth(200);
+        vbMenu.getChildren().addAll(hbTheFuck,btnDisplayQuestions, btnAddQuestion, btnUpdateQuestion, btnUpdateAnswer, btnDeleteAnswer, btnManualExam, btnGenerateExam, btnSaveAndExit);
         vbMenu.setSpacing(5);
         vbMenu.setPadding(new Insets(10));
         menuScene = new Scene(vbMenu, 500, 500);
@@ -392,7 +410,7 @@ public class SystemView implements AbstractSystemView {
         stgDisplayQuestion.show();
 
     }
-
+@Override
     public void showPopUpMessage(String msg) {
         JOptionPane.showMessageDialog(null, msg);
 
