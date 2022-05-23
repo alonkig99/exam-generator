@@ -16,6 +16,7 @@ public interface SystemEventListener {
     void cantDeleteAnswerToView();
     void generateManualExamToView();
     void generateAutomaticExamToView(String examToString);
-
-
+    void copiedExamToView(String s);
+    void updateStartNumOfQuestionsToView(int size);
+    void checkIfMultiChoiceQuestionExamToView(boolean isMultiChoice);
 }

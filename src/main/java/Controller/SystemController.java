@@ -5,6 +5,8 @@ import Listeners.SystemUIEventListener;
 import View.AbstractSystemView;
 import model.Manager;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,11 +17,12 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     private AbstractSystemView view;
 
 
-    public SystemController(Manager model, AbstractSystemView view) {
+    public SystemController(Manager model, AbstractSystemView view) throws IOException, ClassNotFoundException {
         this.model = model;
         this.view = view;
         this.model.registerListeners(this);
         this.view.registerListener(this);
+        this.model.loadFromBinaryFile();
     }
 
     @Override
@@ -58,7 +61,6 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     @Override
     public void updateNumOfQuestionsToView(int numOfQuestions) {
         view.updateNumOfQuestionsToComboBox(numOfQuestions);
-
     }
 
     @Override
@@ -158,7 +160,8 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
-    public void generateManualExamToModel() {
+    public void generateManualExamToModel(ArrayList<Integer> manualQuestionsArray, Integer size) {
+        model.createExam(manualQuestionsArray,size);
     }
 
     @Override
@@ -176,7 +179,34 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
-    public void copyLastExam() {
+    public void copyLastExamToModel() throws CloneNotSupportedException {
+        model.cloneExam();
+    }
+
+    @Override
+    public void saveBinaryFileToModel() throws IOException {
+        model.loadToBinaryFile();
+    }
+
+    @Override
+    public void checkIfMultiChoiceQuestionExamToModel(Integer questionNum) {
+        model.isMultiChoiceQuestionExam(questionNum);
+    }
+
+    @Override
+    public void copiedExamToView(String s) {
+        view.showPopUpMessage("The Exam was copied successfully! \n the copied Exam: \n" + s);
+
+    }
+
+    @Override
+    public void updateStartNumOfQuestionsToView(int size) {
+        view.updateStartNumOfQuestionsToCmb(size);
+    }
+
+    @Override
+    public void checkIfMultiChoiceQuestionExamToView(boolean isMultiChoice) {
+        view.isMultiChoiceQuestionExam(isMultiChoice);
     }
 
 

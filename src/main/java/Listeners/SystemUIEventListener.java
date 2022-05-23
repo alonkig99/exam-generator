@@ -1,7 +1,8 @@
 package Listeners;
 
 
-import model.Manager;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -15,8 +16,9 @@ public interface SystemUIEventListener {
     void updateMultiChoiceAnswerToModel(int questionNum, int answerNum, String questionText);
     void updateNumberOfAnswersToModel(int serial);
     void deleteAnswerToModel(int questionNum, int answerNum);
-    void generateManualExamToModel();
+    void generateManualExamToModel(ArrayList<Integer> manualQuestionsArray, Integer size);
     void generateAutomaticExamToModel(int numOfQuestions);
-    void copyLastExam();
-
+    void copyLastExamToModel() throws CloneNotSupportedException;
+    void saveBinaryFileToModel() throws IOException;
+    void checkIfMultiChoiceQuestionExamToModel(Integer questionNum);
 }

@@ -21,6 +21,7 @@ import javafx.scene.control.ScrollPane;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -30,21 +31,25 @@ import java.util.List;
 public class SystemView implements AbstractSystemView {
 
     private final List<SystemUIEventListener> listeners = new ArrayList<>();
-    private Scene menuScene, addQuestionScene, updateQuestionScene, updateAnswerScene, deleteAnswerScene, manualExamScene, generateExamScene;
+    private Scene menuScene, addQuestionScene, updateQuestionScene, updateAnswerScene, deleteAnswerScene, manualExamScene,manualMultiChoiceScene, generateExamScene;
     private final Stage stgDisplayQuestion = new Stage();
     private final Stage stgDisplayGeneratedExam = new Stage();
     private final VBox vbUpdateOpenQuestionAnswer;
     private final VBox vbUpdateMultiChoiceAnswer;
+    private final VBox vbManualMultiChoice;
     private final ComboBox<Integer> cmbQuestionsNums1 = new ComboBox<>();
     private final ComboBox<Integer> cmbQuestionsNums2 = new ComboBox<>();
     private final ComboBox<Integer> cmbQuestionsNums3 = new ComboBox<>();
     private final ComboBox<Integer> cmbQuestionsNums4 = new ComboBox<>();
+    private final ComboBox<Integer> cmbQuestionsNums5 = new ComboBox<>();
+    private final ComboBox<Integer> cmbQuestionsNums6 = new ComboBox<>();
     private final ComboBox<Integer> cmbAnswersNums1 = new ComboBox<>();
     private final ComboBox<Integer> cmbAnswersNums2 = new ComboBox<>();
+    private final ComboBox<Integer> cmbAnswersNums3 = new ComboBox<>();
 
     public SystemView(Stage theStage) throws FileNotFoundException {
         theStage.setTitle("Exam Generator");
-        VBox vbMenu = new VBox();
+        VBox vbMenu = new VBox(500);
 
 
         Button btnDisplayQuestions = new Button("Display Questions");
@@ -94,6 +99,13 @@ public class SystemView implements AbstractSystemView {
 
         Button btnManualExam = new Button("Create Exam Manually");
         btnManualExam.setMaxWidth(150);
+        btnManualExam.setOnAction(actionEvent -> {
+            stgDisplayQuestion.close();
+            theStage.setScene(manualExamScene);
+            for (SystemUIEventListener l : listeners) {
+                l.displayQuestionToModel();
+            }
+        });
 
         Button btnGenerateExam = new Button("Generate Exam");
         btnGenerateExam.setMaxWidth(150);
@@ -106,6 +118,29 @@ public class SystemView implements AbstractSystemView {
         btnSaveAndExit.setTranslateX(280);
         btnSaveAndExit.setTranslateY(200);
         btnSaveAndExit.setMaxWidth(150);
+        btnSaveAndExit.setOnAction(actionEvent -> {
+            for (SystemUIEventListener l : listeners){
+                try {
+                    l.saveBinaryFileToModel();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    theStage.close();
+                }
+            }
+        });
+
+        Button btnCopyExam = new Button("Copy the latest Exam");
+        btnCopyExam.setMaxWidth(150);
+        btnCopyExam.setOnAction(actionEvent -> {
+            for (SystemUIEventListener l : listeners){
+                try {
+                    l.copyLastExamToModel();
+                } catch (CloneNotSupportedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
 
         VBox vbAddQuestion = new VBox();
@@ -215,7 +250,7 @@ public class SystemView implements AbstractSystemView {
         Label lblUpdatedQuestionNum = new Label("Choose question number below:");
         Label lblUpdatedQuestionText = new Label("Enter the updated text:");
         TextField tfUpdatedQuestionText = new TextField();
-        Button btnSubmitUpdatedQuestion = new Button("Submit updated answer.");
+        Button btnSubmitUpdatedQuestion = new Button("Submit updated question.");
         btnSubmitUpdatedQuestion.setOnAction(actionEvent -> {
             if (cmbQuestionsNums1.getValue() == null) {
                 showPopUpMessage("You must choose a question number!");
@@ -371,6 +406,79 @@ public class SystemView implements AbstractSystemView {
         vbGenerateExam.getChildren().addAll(lblNumOfQuestionsToGenerate, cmbQuestionsNums4, btnClickToGenerate, btnReturnToMenu6);
         generateExamScene = new Scene(vbGenerateExam, 500, 500);
 
+
+        VBox vbManualExam = new VBox();
+        Button btnNumOfQuestionsManual = new Button("Choose number of questions");
+        VBox vbQuestionsForManualExam = new VBox();
+        Label lblNumOfQuestionToManual = new Label("Choose the question ID you want in the Exam: ");
+        Button btnChooseQuestionNum = new Button("Choose question");
+        Label lblChosenQuestions = new Label();
+
+        vbManualMultiChoice = new VBox();
+        vbManualMultiChoice.setVisible(false);
+        vbManualMultiChoice.setPadding(new Insets(10));
+        vbManualMultiChoice.setSpacing(10);
+
+
+
+
+
+        btnNumOfQuestionsManual.setOnAction(actionEvent -> {
+            if (cmbQuestionsNums5.getValue() == null) {
+                showPopUpMessage("You must choose number of questions.");
+                return;
+            }
+            ArrayList <Integer> manualQuestionsArray = new ArrayList<Integer>();
+            vbQuestionsForManualExam.setVisible(true);
+                btnChooseQuestionNum.setOnAction(actionEvent1 -> {
+                    if(cmbQuestionsNums6.getValue() == null){
+                        showPopUpMessage("You must choose a question.");
+                        return;
+                    }
+                    for(int j = 0; j< cmbQuestionsNums5.getValue(); j++) {
+                        if (manualQuestionsArray.size()!=0 && manualQuestionsArray.get(j).equals(cmbQuestionsNums6.getValue())){
+                            showPopUpMessage("the question is already in the Exam, choose another.");
+                            return;
+                        }
+                    }
+                    for(SystemUIEventListener l : listeners){
+                        l.checkIfMultiChoiceQuestionExamToModel(cmbQuestionsNums6.getValue());
+                    }
+                    manualQuestionsArray.add(cmbQuestionsNums6.getValue());
+                    lblChosenQuestions.setText("the questions you have already chosen are: \n" + manualQuestionsArray);
+                    if (cmbQuestionsNums5.getValue()!=manualQuestionsArray.size()) {
+                        return;
+                    }
+
+                    for (SystemUIEventListener l : listeners){
+                        l.generateManualExamToModel(manualQuestionsArray,cmbQuestionsNums5.getValue());
+                    }
+                    for (int i=0;i<manualQuestionsArray.size();i++){
+                        for (SystemUIEventListener l : listeners){
+                            l.checkIfMultiChoiceQuestionExamToModel(manualQuestionsArray.get(i));
+                        }
+                    }
+                });
+
+        });
+        Label lbNumOfAnswers = new Label("choose number of answers to this question");
+        Button btnChooseNumOfAnswers = new Button("choose number of answers");
+
+
+
+
+
+
+        vbManualExam.setPadding(new Insets(10));
+        vbManualExam.setSpacing(10);
+        vbQuestionsForManualExam.setPadding(new Insets(10));
+        vbQuestionsForManualExam.setSpacing(10);
+        vbQuestionsForManualExam.setVisible(false);
+        vbQuestionsForManualExam.getChildren().addAll(lblNumOfQuestionToManual,cmbQuestionsNums4,btnChooseQuestionNum,lblChosenQuestions);
+        vbManualExam.getChildren().addAll(lblNumOfQuestionsToGenerate,cmbQuestionsNums3,btnNumOfQuestionsManual,vbQuestionsForManualExam,vbManualMultiChoice);
+        manualExamScene = new Scene(vbManualExam, 500, 500);
+
+
         InputStream stream = new FileInputStream("src/main/java/View/aK3fkXt7_400x400.dat");
         InputStream stream2 = new FileInputStream("src/main/java/View/ExsgjWDUYAMmf3M.dat");
         Image img = new Image(stream);
@@ -383,12 +491,13 @@ public class SystemView implements AbstractSystemView {
         imageView.setFitWidth(200);
         imageView2.setFitHeight(200);
         imageView2.setFitWidth(200);
-        vbMenu.getChildren().addAll(hbTheFuck,btnDisplayQuestions, btnAddQuestion, btnUpdateQuestion, btnUpdateAnswer, btnDeleteAnswer, btnManualExam, btnGenerateExam, btnSaveAndExit);
+        vbMenu.getChildren().addAll(btnDisplayQuestions, btnAddQuestion, btnUpdateQuestion, btnUpdateAnswer, btnDeleteAnswer, btnManualExam, btnGenerateExam,btnCopyExam, btnSaveAndExit);
         vbMenu.setSpacing(5);
         vbMenu.setPadding(new Insets(10));
         menuScene = new Scene(vbMenu, 500, 500);
         theStage.setScene(menuScene);
         theStage.show();
+
 
 
     }
@@ -414,7 +523,6 @@ public class SystemView implements AbstractSystemView {
     public void showPopUpMessage(String msg) {
         JOptionPane.showMessageDialog(null, msg);
 
-
     }
 
     @Override
@@ -435,6 +543,8 @@ public class SystemView implements AbstractSystemView {
         cmbQuestionsNums2.getItems().add(numOfQuestions);
         cmbQuestionsNums3.getItems().add(numOfQuestions);
         cmbQuestionsNums4.getItems().add(numOfQuestions);
+        cmbQuestionsNums5.getItems().add(numOfQuestions);
+        cmbQuestionsNums6.getItems().add(numOfQuestions);
 
     }
 
@@ -443,6 +553,7 @@ public class SystemView implements AbstractSystemView {
         for (int i = 1; i <= numOfAnswers; i++) {
             cmbAnswersNums1.getItems().add(i);
             cmbAnswersNums2.getItems().add(i);
+            cmbAnswersNums3.getItems().add(i);
         }
     }
 
@@ -453,5 +564,30 @@ public class SystemView implements AbstractSystemView {
         stgDisplayGeneratedExam.setScene(new Scene(sp, 300, 250));
         stgDisplayGeneratedExam.show();
     }
+
+    @Override
+    public void updateStartNumOfQuestionsToCmb(int size) {
+        for (int i=1;i<=size;i++){
+            cmbQuestionsNums1.getItems().add(i);
+            cmbQuestionsNums2.getItems().add(i);
+            cmbQuestionsNums3.getItems().add(i);
+            cmbQuestionsNums4.getItems().add(i);
+            cmbQuestionsNums5.getItems().add(i);
+            cmbQuestionsNums6.getItems().add(i);
+        }
+    }
+
+    @Override
+    public void isMultiChoiceQuestionExam(boolean isMultiChoice) {
+        if(isMultiChoice){
+           vbManualMultiChoice.setVisible(true);
+        }
+
+
+
+
+
+    }
+
 
 }

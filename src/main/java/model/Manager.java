@@ -68,9 +68,33 @@ public class Manager implements Serializable {
         return false;
     }
 
+    public boolean isMultiChoiceQuestionExam(int serial) {
+        if (getQuestionById(serial)==null) {
+            fireInvalidQuestionNumberEvent();
+            return false;
+        }
+        if (getQuestionById(serial) instanceof MultiChoiceQuestion) {
+            fireIsMultiChoiceExamEvent();
+            return true;
+        }
+        fireIsOpenQuestionExamEvent();
+        return false;
+    }
+
+    private void fireIsOpenQuestionExamEvent() {
+        for (SystemEventListener l : listeners) {
+            l.checkIfMultiChoiceQuestionExamToView(false);
+        }
+    }
+
+    private void fireIsMultiChoiceExamEvent() {
+        for (SystemEventListener l : listeners) {
+            l.checkIfMultiChoiceQuestionExamToView(true);
+        }
+    }
+
     private void fireInvalidQuestionNumberEvent() {
         for (SystemEventListener l : listeners) {
-
            l.invalidQuestionNumberToView();
         }
     }
@@ -78,7 +102,6 @@ public class Manager implements Serializable {
     private void fireIsOpenQuestionEvent() {
         for (SystemEventListener l : listeners) {
             l.checkIfMultiChoiceQuestionToView(false);
-
         }
     }
 
@@ -384,7 +407,10 @@ public class Manager implements Serializable {
         ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("questions.dat"));
         this.questions = (List<Question>) inFile.readObject();
         inFile.close();
-
+        updateStaticSerialNumber();
+        for (SystemEventListener l : listeners){
+            l.updateStartNumOfQuestionsToView(getSize());
+        }
     }
 
 
@@ -508,8 +534,13 @@ public class Manager implements Serializable {
 
     public void cloneExam() throws CloneNotSupportedException {
         Exam copyExam = this.currentExam.clone();
-        System.out.println(copyExam.toString());
+        fireCopyLastExam(copyExam);
+    }
 
+    private void fireCopyLastExam(Exam copyExam) {
+        for (SystemEventListener l : listeners) {
+            l.copiedExamToView(copyExam.toString());
+        }
     }
 
 
