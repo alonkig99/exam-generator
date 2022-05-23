@@ -490,7 +490,7 @@ public class SystemView implements AbstractSystemView {
         vbQuestionsForManualExam.setSpacing(10);
         vbQuestionsForManualExam.setVisible(false);
         vbQuestionsForManualExam.getChildren().addAll(lblNumOfQuestionToManual, cmbQuestionsNums5, btnChooseQuestionNum, lblChosenQuestions);
-        vbManualExam.getChildren().addAll(lblNumOfQuestionsToGenerate, cmbQuestionsNums6, btnNumOfQuestionsManual, vbQuestionsForManualExam, vbManualMultiChoice);
+        vbManualExam.getChildren().addAll( cmbQuestionsNums6, btnNumOfQuestionsManual, vbQuestionsForManualExam, vbManualMultiChoice);
         manualExamScene = new Scene(vbManualExam, 500, 500);
 
 
