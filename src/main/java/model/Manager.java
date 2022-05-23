@@ -402,7 +402,6 @@ public class Manager implements Serializable {
 
     }
 
-
     public void loadFromBinaryFile() throws IOException, ClassNotFoundException {
         ObjectInputStream inFile = new ObjectInputStream(new FileInputStream("questions.dat"));
         this.questions = (List<Question>) inFile.readObject();
@@ -533,6 +532,9 @@ public class Manager implements Serializable {
     }
 
     public void cloneExam() throws CloneNotSupportedException {
+        if (this.currentExam==null) {
+            return;
+        }
         Exam copyExam = this.currentExam.clone();
         fireCopyLastExam(copyExam);
     }
