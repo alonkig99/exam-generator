@@ -54,6 +54,16 @@ public class Manager implements Serializable {
 
         return questions.get(index);
     }
+    public OpenQuestion getOpenQuestion(int serial) {
+        if (!isMultiChoiceQuestion(serial)) {
+            return (OpenQuestion) getQuestionById(serial);
+        } return null;
+    }
+    public MultiChoiceQuestion getMultiChoiceQuestion(int serial) {
+        if (isMultiChoiceQuestion(serial)) {
+            return (MultiChoiceQuestion) getQuestionById(serial);
+        } return null;
+    }
 
     public boolean isMultiChoiceQuestion(int serial) {
         if (getQuestionById(serial)==null) {
@@ -70,28 +80,14 @@ public class Manager implements Serializable {
 
     public boolean isMultiChoiceQuestionExam(int serial) {
         if (getQuestionById(serial)==null) {
-            fireInvalidQuestionNumberEvent();
             return false;
         }
         if (getQuestionById(serial) instanceof MultiChoiceQuestion) {
-            fireIsMultiChoiceExamEvent();
             return true;
         }
-        fireIsOpenQuestionExamEvent();
         return false;
     }
 
-    private void fireIsOpenQuestionExamEvent() {
-        for (SystemEventListener l : listeners) {
-            l.checkIfMultiChoiceQuestionExamToView(false);
-        }
-    }
-
-    private void fireIsMultiChoiceExamEvent() {
-        for (SystemEventListener l : listeners) {
-            l.checkIfMultiChoiceQuestionExamToView(true);
-        }
-    }
 
     private void fireInvalidQuestionNumberEvent() {
         for (SystemEventListener l : listeners) {

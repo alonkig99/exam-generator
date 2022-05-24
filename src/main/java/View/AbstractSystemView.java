@@ -12,5 +12,5 @@ public interface AbstractSystemView {
     void updateNumOfAnswersToComboBox(int numOfAnswers);
     void displayGeneratedExam(String examToString);
     void updateStartNumOfQuestionsToCmb(int size);
-    void isMultiChoiceQuestionExam(boolean isMultiChoice);
+    int getNumOfAnswers(int serial);
 }

@@ -25,6 +25,7 @@ import javax.swing.*;
 import javafx.scene.control.ScrollPane;
 
 
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -429,13 +430,31 @@ public class SystemView implements AbstractSystemView {
         generateExamScene = new Scene(vbGenerateExam, 400, 500);
 
 
+
+        //manual exam libi
+
         VBox vbManualExam = new VBox();
         Button btnNumOfQuestionsManual = new Button("Choose number of questions");
         VBox vbQuestionsForManualExam = new VBox();
         Label lblNumOfQuestionToManual = new Label("Choose the question ID you want in the Exam: ");
         Button btnChooseQuestionNum = new Button("Choose question");
         Label lblChosenQuestions = new Label();
+        Label lblMultiChoiceQuestion = new Label();
+        Button btnReturnToMenu7 = new Button("Return to menu");
+        Label lbNumOfAnswers = new Label("choose number of answers to this question");
+        Button btnChooseNumOfAnswers = new Button("choose number of answers");
+        vbManualExam.setPadding(new Insets(10));
+        vbManualExam.setSpacing(10);
+        vbQuestionsForManualExam.setPadding(new Insets(10));
+        vbQuestionsForManualExam.setSpacing(10);
+        vbQuestionsForManualExam.setVisible(false);
 
+        btnReturnToMenu7.setOnAction(actionEvent -> {
+                    cmbQuestionsNums3.getSelectionModel().clearSelection();
+                    cmbAnswersNums2.getSelectionModel().clearSelection();
+                    stgDisplayQuestion.close();
+                    theStage.setScene(menuScene);
+                });
         vbManualMultiChoice = new VBox();
         vbManualMultiChoice.setVisible(false);
         vbManualMultiChoice.setPadding(new Insets(10));
@@ -468,29 +487,32 @@ public class SystemView implements AbstractSystemView {
                 if (cmbQuestionsNums5.getValue() != manualQuestionsArray.size()) {
                     return;
                 }
-
                 for (SystemUIEventListener l : listeners) {
                     l.generateManualExamToModel(manualQuestionsArray, cmbQuestionsNums5.getValue());
                 }
                 for (int i = 0; i < manualQuestionsArray.size(); i++) {
+                    lblMultiChoiceQuestion.setText("plesae choose answers for questions number " + manualQuestionsArray.get(i) + ": \n");
+                    vbManualMultiChoice.getChildren().add(lblMultiChoiceQuestion);
                     for (SystemUIEventListener l : listeners) {
-                        l.checkIfMultiChoiceQuestionExamToModel(manualQuestionsArray.get(i));
+                       if(l.checkIfMultiChoiceQuestionExamToModel(manualQuestionsArray.get(i))){
+                           CheckboxGroup multiChoiceAnswers = new CheckboxGroup();
+                           for (int j=0;j<getNumOfAnswers(manualQuestionsArray.get(i));j++){
+
+                               Checkbox answer = new Checkbox(getAnswersText(manualQuestionsArray.get(i),j),multiChoiceAnswers,false);
+                               vbManualMultiChoice.getChildren().add(answer);
+
+                           }
+
+                           vbManualMultiChoice.setVisible(true);
+
+                       }
                     }
                 }
             });
-
         });
-        Label lbNumOfAnswers = new Label("choose number of answers to this question");
-        Button btnChooseNumOfAnswers = new Button("choose number of answers");
 
-
-        vbManualExam.setPadding(new Insets(10));
-        vbManualExam.setSpacing(10);
-        vbQuestionsForManualExam.setPadding(new Insets(10));
-        vbQuestionsForManualExam.setSpacing(10);
-        vbQuestionsForManualExam.setVisible(false);
-        vbQuestionsForManualExam.getChildren().addAll(lblNumOfQuestionToManual, cmbQuestionsNums5, btnChooseQuestionNum, lblChosenQuestions);
-        vbManualExam.getChildren().addAll( cmbQuestionsNums6, btnNumOfQuestionsManual, vbQuestionsForManualExam, vbManualMultiChoice);
+        vbQuestionsForManualExam.getChildren().addAll(lblNumOfQuestionToManual, cmbQuestionsNums6, btnChooseQuestionNum, lblChosenQuestions);
+        vbManualExam.getChildren().addAll( cmbQuestionsNums5, btnNumOfQuestionsManual, vbQuestionsForManualExam, vbManualMultiChoice,btnReturnToMenu7);
         manualExamScene = new Scene(vbManualExam, 500, 500);
 
 
@@ -522,6 +544,13 @@ public class SystemView implements AbstractSystemView {
         theStage.show();
 
 
+    }
+
+    public String getAnswersText(int serial,int answerIndex) {
+       String answerText = null;
+        for (SystemUIEventListener l : listeners){
+            answerText = l.getAnswerTextFromView(serial,answerIndex);
+        } return answerText;
     }
 
 
@@ -605,13 +634,11 @@ public class SystemView implements AbstractSystemView {
     }
 
     @Override
-    public void isMultiChoiceQuestionExam(boolean isMultiChoice) {
-        if (isMultiChoice) {
-            vbManualMultiChoice.setVisible(true);
-        }
-
-
+    public int getNumOfAnswers(int serial) {
+        int numOfAnswersView=0 ;
+       for (SystemUIEventListener l : listeners){
+            numOfAnswersView = l.getAnswersSizeToModel(serial);
+       } return numOfAnswersView;
     }
-
 
 }

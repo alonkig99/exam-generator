@@ -97,11 +97,11 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
 
     }
 
-    @Override
+    /*@Override
     public void generateManualExamToView() {
 
     }
-
+*/
 
     @Override
     public void displayQuestionToModel() {
@@ -189,8 +189,18 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
-    public void checkIfMultiChoiceQuestionExamToModel(Integer questionNum) {
-        model.isMultiChoiceQuestionExam(questionNum);
+    public int getAnswersSizeToModel(int serial) {
+        return model.getNumOfAnswers(serial);
+    }
+
+    @Override
+    public String getAnswerTextFromView(int serial, int answerIndex) {
+        return model.getMultiChoiceQuestion(serial).getAnswerByIndex(answerIndex).toString();
+    }
+
+    @Override
+    public boolean checkIfMultiChoiceQuestionExamToModel(int serial) {
+        return model.isMultiChoiceQuestionExam(serial);
     }
 
     @Override
@@ -204,10 +214,7 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
         view.updateStartNumOfQuestionsToCmb(size);
     }
 
-    @Override
-    public void checkIfMultiChoiceQuestionExamToView(boolean isMultiChoice) {
-        view.isMultiChoiceQuestionExam(isMultiChoice);
-    }
+
 
 
 }
