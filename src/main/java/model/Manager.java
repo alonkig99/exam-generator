@@ -356,23 +356,25 @@ public class Manager implements Serializable {
 
     }
 
-    public void pickAnswersExam(Question question, List<Integer> answersByIndex) {
-        MultiChoiceQuestion castQuestion = (MultiChoiceQuestion) question;
-        boolean answerExist;
-        for (int i = 0; i < castQuestion.getLogicalSize(); i++) {
-            answerExist = false;
-            for (int j = 0; j < answersByIndex.size() && !answerExist; j++) {
-                if (castQuestion.getAnswerByIndex(i).getAnswerId() == (answersByIndex.get(j))) {
-                    answerExist = true;
+    public void pickAnswersExam(int serial, List<Integer> answersByIndex) {
+        for(int k=0;k<this.currentExam.getSize();k++) {
+            if (this.currentExam.get(k).getSerial()==serial){
+                boolean answerExist;
+                for (int i = 0; i < ((MultiChoiceQuestion)this.currentExam.get(k)).getLogicalSize(); i++) {
+                    answerExist = false;
+                    for (int j = 0; j < answersByIndex.size() && !answerExist; j++) {
+                        if (((MultiChoiceQuestion)this.currentExam.get(k)).getAnswerByIndex(i).getAnswerId() == (answersByIndex.get(j))) {
+                            answerExist = true;
+                        }
+                    }
+                    if (!answerExist) {
+                        ((MultiChoiceQuestion)this.currentExam.get(k)).deleteAnswer(i);
+                        i--;
+                    }
                 }
-            }
-            if (!answerExist) {
-                castQuestion.deleteAnswer(i);
-                i--;
+                ((MultiChoiceQuestion)this.currentExam.get(k)).answerIndication();
             }
         }
-        castQuestion.answerIndication();
-
     }
 
     public void printManualExam() throws FileNotFoundException {
@@ -380,7 +382,13 @@ public class Manager implements Serializable {
         Collections.sort(currentExam.getQuestions(), c);
         currentExam.loadExamQuestionsToFile();
         currentExam.loadExamSolutionsToFile();
-        System.out.println(currentExam.getQuestions());
+        firePrintManualExam(currentExam.getQuestions().toString());
+    }
+
+    private void firePrintManualExam(String exam) {
+        for(SystemEventListener l : listeners){
+            l.generateManualExamToView(exam);
+        }
     }
 
 

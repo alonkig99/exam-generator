@@ -17,5 +17,6 @@ public interface SystemEventListener {
     void generateAutomaticExamToView(String examToString);
     void copiedExamToView(String s);
     void updateStartNumOfQuestionsToView(int size);
+    void generateManualExamToView(String examToString);
 
 }

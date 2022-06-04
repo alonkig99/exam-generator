@@ -1,6 +1,7 @@
 package Listeners;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -23,4 +24,6 @@ public interface SystemUIEventListener {
     int getAnswersSizeToModel(int serial);
     String getAnswerTextFromView(int answerIndex, int index);
     boolean checkIfMultiChoiceQuestionExamToModel(int serial);
+    void manualExamMultiChoiceAnswersToModel(int serial,ArrayList<Integer> answersIndex);
+    void printManualExam() throws FileNotFoundException;
 }

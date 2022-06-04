@@ -204,6 +204,16 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
+    public void manualExamMultiChoiceAnswersToModel(int serial, ArrayList<Integer> answersIndex) {
+        model.pickAnswersExam( serial, answersIndex);
+    }
+
+    @Override
+    public void printManualExam() throws FileNotFoundException {
+        model.printManualExam();
+    }
+
+    @Override
     public void copiedExamToView(String s) {
         view.showPopUpMessage("The Exam was copied successfully! \n the copied Exam: \n" + s);
 
@@ -214,7 +224,10 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
         view.updateStartNumOfQuestionsToCmb(size);
     }
 
-
+    @Override
+    public void generateManualExamToView(String examToString) {
+        view.displayGeneratedExam(examToString);
+    }
 
 
 }
