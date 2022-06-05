@@ -1,8 +1,6 @@
 package View;
 
 import Listeners.SystemUIEventListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -27,7 +25,6 @@ import javax.swing.*;
 import javafx.scene.control.ScrollPane;
 
 
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,6 +32,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class SystemView implements AbstractSystemView {
@@ -506,39 +504,46 @@ public class SystemView implements AbstractSystemView {
                     }
                 }
                 if(multiQuestionsInExam.size()>0) {
-                            for (int i = 0; i < multiQuestionsInExam.size(); i++) {
-                                lblMultiChoiceQuestion.setText("plesae choose answers for question number " + multiQuestionsInExam.get(i) + ": \n");
-                                vbManualMultiChoice.getChildren().add(0, lblMultiChoiceQuestion);
-                                ArrayList<CheckBox> answers = new ArrayList<>();
-                                        for (int j = 0; j < getNumOfAnswers(multiQuestionsInExam.get(i)); j++) {
-                                            answers.add(new CheckBox(getAnswersText(multiQuestionsInExam.get(i), j)));
-                                            vbManualMultiChoice.getChildren().add(j + 1, answers.get(j));
-                                        }
-                                        vbManualMultiChoice.getChildren().add(btnChooseTheAnswers);
-                                        vbManualMultiChoice.setVisible(true);
-                                        int finalI = i;
-                                btnChooseTheAnswers.setOnAction(actionEvent3 -> {
-                                            ArrayList<Integer> chosenAnswers = new ArrayList<>();
-                                            for (int j = 0; j < answers.size(); j++) {
-                                                if (answers.get(j).isSelected()) {
-                                                    chosenAnswers.add(j + 1);
-                                                }
-                                            }
-                                            if (chosenAnswers.size() < 2) {
-                                                showPopUpMessage("you must select at least 2 answers or more");
-                                                return;
-                                            }
-                                                for (SystemUIEventListener l : listeners) {
-                                                    l.manualExamMultiChoiceAnswersToModel(multiQuestionsInExam.get(finalI), chosenAnswers);
-                                                    vbManualMultiChoice.getChildren().clear();
-                                                }
-                                        });
+                    final int[] i = {0};
+                    lblMultiChoiceQuestion.setText("plesae choose answers for question number " + multiQuestionsInExam.get(i[0]) + ": \n");
+                    vbManualMultiChoice.getChildren().add(0, lblMultiChoiceQuestion);
+                    ArrayList<CheckBox> answers = new ArrayList<>();
+                    for (int j = 0; j < getNumOfAnswers(multiQuestionsInExam.get(i[0])); j++) {
+                        answers.add(new CheckBox(getAnswersText(multiQuestionsInExam.get(i[0]), j)));
+                        vbManualMultiChoice.getChildren().add(j + 1, answers.get(j));
+                    } vbManualMultiChoice.getChildren().add(btnChooseTheAnswers);
+                    vbManualMultiChoice.setVisible(true);
 
-                                    } vbManualMultiChoice.setVisible(false);
-                    vbManualExam.getChildren().add(4,btnShowManualExam);
+                    btnChooseTheAnswers.setOnAction(actionEvent3 -> {
+                        ArrayList<Integer> chosenAnswers = new ArrayList<>();
+                        for (int j = 0; j < answers.size(); j++) {
+                            if (answers.get(j).isSelected()) {
+                                chosenAnswers.add(j + 1);
+                            }
                         }
-
+                        if (chosenAnswers.size() < 2) {
+                            showPopUpMessage("you must select at least 2 answers or more");
+                            return;
+                        }
+                        for (SystemUIEventListener l : listeners) {
+                            l.manualExamMultiChoiceAnswersToModel(multiQuestionsInExam.get(i[0]), chosenAnswers);
+                        } vbManualMultiChoice.getChildren().clear();
+                        if (i[0] < multiQuestionsInExam.size()-1){
+                            i[0]++;
+                            lblMultiChoiceQuestion.setText("plesae choose answers for question number " + multiQuestionsInExam.get(i[0]) + ": \n");
+                            vbManualMultiChoice.getChildren().add(0, lblMultiChoiceQuestion);
+                            ArrayList<CheckBox> nextAnswers = new ArrayList<>();
+                            for (int j = 0; j < getNumOfAnswers(multiQuestionsInExam.get(i[0])); j++) {
+                                nextAnswers.add(new CheckBox(getAnswersText(multiQuestionsInExam.get(i[0]), j)));
+                                vbManualMultiChoice.getChildren().add(j + 1, nextAnswers.get(j));
+                            } vbManualMultiChoice.getChildren().add(btnChooseTheAnswers);
+                            return;
+                        } vbManualExam.getChildren().add(btnShowManualExam);
+                        vbManualMultiChoice.setVisible(false);
+                    });
+                        }
                 });
+
         btnShowManualExam.setOnAction(actionEvent -> {
             manualQuestionsArray.removeAll(manualQuestionsArray);
             cmbQuestionsNums6.getSelectionModel().clearSelection();
