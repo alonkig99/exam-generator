@@ -17,12 +17,42 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     private AbstractSystemView view;
 
 
-    public SystemController(Manager model, AbstractSystemView view) throws IOException, ClassNotFoundException {
+    public SystemController(Manager model, AbstractSystemView view) {
         this.model = model;
         this.view = view;
+
+       /////// HARD CODED QUESTIONS ///////
+        model.addOpenQuestion("OpenQuestion1", "OpenAnswer1");
+        view.updateNumOfQuestionsToComboBox(model.getSize());
+        model.addOpenQuestion("OpenQuestion2", "OpenAnswer2");
+        view.updateNumOfQuestionsToComboBox(model.getSize());
+        model.addMultiQuestion("MultiChoiceQuestion1");
+        view.updateNumOfQuestionsToComboBox(model.getSize());
+        model.addAnswer("MultiAnswer1", true);
+        model.addAnswer("MultiAnswer2", true);
+        model.addAnswer("MultiAnswer3", false);
+        model.addAnswer("MultiAnswer4", false);
+        model.addMultiQuestion("MultiChoiceQuestion2");
+        view.updateNumOfQuestionsToComboBox(model.getSize());
+        model.addAnswer("MultiAnswer5", true);
+        model.addAnswer("MultiAnswer6", true);
+        model.addAnswer("MultiAnswer7", false);
+        model.addAnswer("MultiAnswer8", false);
+//////////////////////////////////////////////////////
+
+
         this.model.registerListeners(this);
         this.view.registerListener(this);
-        this.model.loadFromBinaryFile();
+
+
+
+
+        try {
+            this.model.loadFromBinaryFile();
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Override
@@ -97,11 +127,6 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
 
     }
 
-    /*@Override
-    public void generateManualExamToView() {
-
-    }
-*/
 
     @Override
     public void displayQuestionToModel() {
@@ -184,8 +209,14 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     }
 
     @Override
-    public void saveBinaryFileToModel() throws IOException {
-        model.loadToBinaryFile();
+    public void saveBinaryFileToModel() {
+       try {
+            model.loadToBinaryFile();
+      }
+      catch(IOException e) {
+           e.printStackTrace();
+
+        }
     }
 
     @Override

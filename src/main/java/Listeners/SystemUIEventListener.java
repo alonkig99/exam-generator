@@ -20,7 +20,7 @@ public interface SystemUIEventListener {
     void generateManualExamToModel(ArrayList<Integer> manualQuestionsArray, Integer size);
     void generateAutomaticExamToModel(int numOfQuestions);
     void copyLastExamToModel() throws CloneNotSupportedException;
-    void saveBinaryFileToModel() throws IOException;
+    void saveBinaryFileToModel();
     int getAnswersSizeToModel(int serial);
     String getAnswerTextFromView(int answerIndex, int index);
     boolean checkIfMultiChoiceQuestionExamToModel(int serial);
