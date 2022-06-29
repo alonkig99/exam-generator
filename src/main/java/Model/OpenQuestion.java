@@ -1,7 +1,5 @@
-package model;
+package Model;
 
-
-import java.util.InputMismatchException;
 
 /**
  * The OpenQuestion class is a sub-class of the Question class. It holds a question text and an answer text.

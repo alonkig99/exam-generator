@@ -3,7 +3,7 @@ package Controller;
 import Listeners.SystemEventListener;
 import Listeners.SystemUIEventListener;
 import View.AbstractSystemView;
-import model.Manager;
+import Model.Manager;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,31 +20,8 @@ public class SystemController implements SystemUIEventListener, SystemEventListe
     public SystemController(Manager model, AbstractSystemView view) {
         this.model = model;
         this.view = view;
-
-       /////// HARD CODED QUESTIONS ///////
-        model.addOpenQuestion("OpenQuestion1", "OpenAnswer1");
-        view.updateNumOfQuestionsToComboBox(model.getSize());
-        model.addOpenQuestion("OpenQuestion2", "OpenAnswer2");
-        view.updateNumOfQuestionsToComboBox(model.getSize());
-        model.addMultiQuestion("MultiChoiceQuestion1");
-        view.updateNumOfQuestionsToComboBox(model.getSize());
-        model.addAnswer("MultiAnswer1", true);
-        model.addAnswer("MultiAnswer2", true);
-        model.addAnswer("MultiAnswer3", false);
-        model.addAnswer("MultiAnswer4", false);
-        model.addMultiQuestion("MultiChoiceQuestion2");
-        view.updateNumOfQuestionsToComboBox(model.getSize());
-        model.addAnswer("MultiAnswer5", true);
-        model.addAnswer("MultiAnswer6", true);
-        model.addAnswer("MultiAnswer7", false);
-        model.addAnswer("MultiAnswer8", false);
-//////////////////////////////////////////////////////
-
-
         this.model.registerListeners(this);
         this.view.registerListener(this);
-
-
 
 
         try {

@@ -5,5 +5,5 @@ module java {
 
 
     opens Application to javafx.graphics,javafx.fxml;
-    exports model;
+    exports Model;
 }

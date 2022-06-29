@@ -1,4 +1,4 @@
-package model;
+package Model;
 
 
 /**
@@ -64,11 +64,6 @@ public class MultiChoiceQuestion extends Question implements Cloneable{
         return answers.size();
     }
 
-    /**
-     * @param text
-     * @param trueFalse
-     * @return
-     */
 
 
     /**

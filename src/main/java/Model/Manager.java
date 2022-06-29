@@ -1,7 +1,6 @@
-package model;
+package Model;
 
 import Listeners.SystemEventListener;
-import Listeners.SystemUIEventListener;
 
 import java.io.*;
 import java.util.*;
@@ -33,10 +32,6 @@ public class Manager implements Serializable {
     }
 
 
-    public Exam getCurrentExam() {
-        return currentExam;
-    }
-
     /**
      * @param serial number of the question.
      * @return question matching the passed serial number.
@@ -53,13 +48,6 @@ public class Manager implements Serializable {
     public Question getQuestionByIndex(int index) {
 
         return questions.get(index);
-    }
-
-    public OpenQuestion getOpenQuestion(int serial) {
-        if (!isMultiChoiceQuestion(serial)) {
-            return (OpenQuestion) getQuestionById(serial);
-        }
-        return null;
     }
 
     public MultiChoiceQuestion getMultiChoiceQuestion(int serial) {
@@ -252,17 +240,6 @@ public class Manager implements Serializable {
 
     }
 
-
-    /**
-     * @param numOfQuestions
-     * @throws NumOfQuestionsOutOfBoundException
-     */
-    public void checkIfNumOfQuestionsInBound(int numOfQuestions, Manager repository) throws NumOfQuestionsOutOfBoundException {
-        if (numOfQuestions > repository.getSize() || numOfQuestions <= 0) {
-            throw new NumOfQuestionsOutOfBoundException();
-
-        }
-    }
 
     public boolean containsQuestion(List<Question> qa, Question q) {
         if (qa.size() == 0) {
@@ -457,10 +434,6 @@ public class Manager implements Serializable {
         return false;
     }
 
-    public Question getQuestionExam(int index) {
-        return (Question) currentExam.getQuestions().get(index);
-    }
-
     public boolean addAnswer(String text, boolean indicator) {
         return ((MultiChoiceQuestion) questions.get(getSize() - 1)).addAnswer(text, indicator);
 
@@ -501,10 +474,6 @@ public class Manager implements Serializable {
         }
     }
 
-    public void setAnswerTrueFalse(int serial, int answerNum, boolean indicator) {
-        ((MultiChoiceQuestion) getQuestionById(serial)).getAnswerById(answerNum).setTrueFalse(indicator);
-    }
-
     public void deleteAnswer(int serial, int answerNum) {
 
         if (getNumOfAnswers(serial) <= 2) {
@@ -533,10 +502,6 @@ public class Manager implements Serializable {
     public int getNumOfAnswers(int serial) {
         return ((MultiChoiceQuestion) getQuestionById(serial)).getLogicalSize();
 
-    }
-
-    public boolean answerExists(int serial, String answer) {
-        return ((MultiChoiceQuestion) getQuestionById(serial)).answerExists(answer);
     }
 
     public void cloneExam() throws CloneNotSupportedException {
