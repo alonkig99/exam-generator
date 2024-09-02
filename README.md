@@ -1,12 +1,14 @@
-<h1 align="left">
-   Exam Generator- a JavaFX project
-</h1>
+<h2 align="left">
+  EXAM GENERATOR
+</h2>
+
+A project for Object Oriented Programming course. It's a JavaFX desktop application allowing the creation of exams with an intuitive GUI.
 
 ### <p>Functions:</p>
 * Add, update and delete multiple choice/open questions and answers.
 * Create an exam manually by choosing questions from the existing questions pool.
-* Generate an exam automatically by choosing n questions, the program will select n questions randomly and create the exam.
-* Save existing questions- by pressing "Save to file&exit" The objects will be converted to a bytestream using object serialization so next time the program is loaded it will deserialize the bytesteam to create the question objects allowing the users to pick up from where they left off.
+* Generate an exam automatically by choosing x questions, the program will select x questions randomly and create the exam.
+* Save existing questions- by selecting "Save to File & Exit," the program will serialize and save the current question objects. This allows users to pick up from where they left off the next time they load the program.
 *  The exam questions sheet and answers sheets are saved in seperate text files.
 
 
