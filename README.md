@@ -5,11 +5,11 @@
 A project for Object Oriented Programming course. It's a JavaFX desktop application allowing the creation of exams with an intuitive GUI.
 
 ### <p>Functions:</p>
-* Add, update and delete multiple choice/open questions and answers.
-* Create an exam manually by choosing questions from the existing questions pool.
-* Generate an exam automatically by choosing x questions, the program will select x questions randomly and create the exam.
-* Save existing questions- by selecting "Save to File & Exit," the program will serialize and save the current question objects. This allows users to pick up from where they left off the next time they load the program.
-*  The exam questions sheet and answers sheets are saved in seperate text files.
+* Add, Update, and Delete Questions: The program allows users to manage multiple-choice and open-ended questions and answers.
+* Manual Exam Creation: Users can create a custom exam by selecting questions from the existing pool.
+* Automatic Exam Generation: The program can randomly select a user-specified number of questions to automatically generate an exam.
+* Save Questions to File: The program serializes and saves current questions when "Save to File & Exit" is selected, allowing users to resume their work later.
+* Separate File Storage: Exam questions and answers are saved in separate text files for organized storage.
 
 
 ### <p>Screenshots of the GUI:</p>
